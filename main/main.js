@@ -3,6 +3,7 @@ world; container; places; beings; time; movement; schedule; software-interpretat
 */
 
 let world;
+let time = 0; 
 
 function setup() {
 	// createCanvas(1000, 562); //in 16:9 aspect ratio.
@@ -20,8 +21,9 @@ function draw() {
 
 class World {
 	constructor(){
-		this.time = 0;
-		this.beings = []; 
+		this.beings = [];
+		
+		this.beings.push(new Being(width/2, height/2)); //debug being.
 	}
 	exist(){
 		background(255);
@@ -34,13 +36,33 @@ class World {
 		}
 	}
 	keep_time(){
-		this.time = Math.floor(frameCount/60 % 24); 
+		//on this world, time is a 24-second loop.
+		time = Math.floor(frameCount/60 % 24); 
 	}
 	make_and_remove(){
+		
 		/*
-		death criteria: 
-		-  
+		birth criteria: 
+		at a certain rate, a new being is produced. 
+
+		---
+
+		death criteria:
+		as beings age, their probability to die increases. therefore, it is almost imminent if they are 100.
 		*/
+
+		//death:
+		//as beings age, their probability to die increases. therefore, it is almost imminent if they are 100.
+		for (let i ){
+			let p = being.age; 
+			let chance = random(); 
+
+			if (chance > p){
+				//alive.
+			}else{
+				this.beings.splice
+			}
+		}
 	}
 }
 
@@ -59,7 +81,10 @@ class Being {
 		circle (this.pos.x, this.pos.y, this.mass); 
 	}
 	age(){
-			
+		if (time == 0 && frameCount%60==0){
+			//on this planet, beings age by 1 unit per day.
+			this.curr_age+=0.01;  
+		}
 	}
 	move(){
 			
