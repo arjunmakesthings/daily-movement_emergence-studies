@@ -42,6 +42,7 @@ class World {
 		-  
 		*/
 	}
+}
 
 class Being {
 	constructor(x,y){
