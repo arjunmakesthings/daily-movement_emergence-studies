@@ -26,13 +26,13 @@ https://math.stackexchange.com/questions/2821035/exponential-something-what-is-t
 //   if (x < width - 50 && y < height - 50) {
 //     x+=1;
 
-//     const a = 100; //max. 
+//     const a = 100; //max.
 //     const b = 50; //how quickly max is achieved.
 //     const base = 50; //to ensure base of graph doesn't shift.
 
 //     y = base + a * (1 - Math.exp(-(x - base) / b));
 
-//     console.log(y); 
+//     console.log(y);
 
 //     point(x, y);
 //     plot(x, y);
@@ -51,7 +51,7 @@ function plot2(x, y) {
     const a = 100; //max.
     const b = 2; //how quickly max is achieved.
 
-    y = a * (1 - Math.exp(-(x) / b));
+    y = a * (1 - Math.exp(-x / b));
 
     console.log(y);
 

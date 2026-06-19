@@ -27,6 +27,7 @@ class Being {
   }
   get_mass() {
     //for a given current age, calculate mass.
+
     const a = 50; //max.
     const b = 18; //in how many steps is max achieved.
     const base = 10;
