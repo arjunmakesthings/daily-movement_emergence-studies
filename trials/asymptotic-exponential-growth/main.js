@@ -7,7 +7,7 @@ function setup() {
 function draw() {
   translate(0, height);
   scale(1, -1);
-  plot(50, 50);
+  plot2(50, 50);
   noLoop();
 }
 /*
@@ -19,21 +19,44 @@ https://math.stackexchange.com/questions/2821035/exponential-something-what-is-t
 
 */
 
-function plot(x, y) {
+// function plot(x, y) {
+//   strokeWeight(10);
+//   stroke(0);
+
+//   if (x < width - 50 && y < height - 50) {
+//     x+=1;
+
+//     const a = 100; //max. 
+//     const b = 50; //how quickly max is achieved.
+//     const base = 50; //to ensure base of graph doesn't shift.
+
+//     y = base + a * (1 - Math.exp(-(x - base) / b));
+
+//     console.log(y); 
+
+//     point(x, y);
+//     plot(x, y);
+//   } else {
+//     return;
+//   }
+// }
+
+function plot2(x, y) {
   strokeWeight(10);
   stroke(0);
 
   if (x < width - 50 && y < height - 50) {
-    x+=1;
+    x += 1;
 
-    const a = 100; //max. 
-    const b = 50; //how quickly max is achieved.
-    const base = 50; //to ensure base of graph doesn't shift.
+    const a = 100; //max.
+    const b = 2; //how quickly max is achieved.
 
-    y = base + a * (1 - Math.exp(-(x - base) / b));
+    y = a * (1 - Math.exp(-(x) / b));
+
+    console.log(y);
 
     point(x, y);
-    plot(x, y);
+    plot2(x, y);
   } else {
     return;
   }

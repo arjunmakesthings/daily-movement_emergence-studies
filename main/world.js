@@ -17,19 +17,20 @@ class World {
 
     this.keep_time();
 
-    this.kill();
+    //this.kill();
 
     for (let being of this.beings) {
       being.exist();
+
+      if (this.beings.length > 2) this.beings.reproduce;
     }
   }
   keep_time() {
-    //on this world, time is a 24-second loop.
-    this.time = Math.floor((frameCount / 60) % 5);
+    //on this world, time exists as a 24-second loop.
+    this.time = Math.floor((frameCount / 60) % 1);
   }
   kill() {
     //as beings age, their probability to die increases. therefore, it is almost imminent if they are 1000.
-
     if (this.time == 0) {
       //find a new killing time for the day:
       this.killing_time = Math.round(Math.random(0, 5));
