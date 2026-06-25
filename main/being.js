@@ -1,21 +1,18 @@
 class Being {
   constructor(x, y) {
-    this.pos = createVector(x, y); 
-    this.curr_age = 0;
-    this.mass = 10;
+    this.pos = createVector(x, y);
+    this.curr_age = 1;
+    this.mass = 1;
     this.energy = 0;
-
-    this.velocity = createVector(0,0); 
+    this.speed = createVector(1, 1);
 
     this.schedule = this.get_schedule();
   }
-  get_schedule(){
-
-  }
+  get_schedule() {}
   exist() {
     this.body();
     this.age();
-    this.move();
+    // this.move();
   }
   body() {
     fill(0);
@@ -28,9 +25,7 @@ class Being {
 
       //as age increases, energy decreases; while mass increases.
       this.mass = this.get_mass();
-      this.energy = this.get_energy(); 
-
-      console.log(this.curr_age, this.mass, this.energy); 
+      this.energy = this.get_energy();
     }
   }
   get_mass() {
@@ -38,28 +33,46 @@ class Being {
 
     //mass is an asymptotic-exponential-growth graph.
 
-    const a = 50; //max.
+    const a = 10; //max.
     const b = 18; //in how many steps is max achieved.
-    const base = 10;
 
     return (a * (1 - Math.exp(-5 * (this.curr_age / b)))) / (1 - Math.exp(-5));
   }
-  get_energy(){
+  get_energy() {
     //energy is like a bell curve.
-    return 0.03 * this.curr_age * this.curr_age * Math.exp(-this.curr_age / 18);
+
+    /*
+    https://www.desmos.com/calculator/3iioyvma2l
+
+    f(x) = y = e^(-((x-a)^2) / b).
+    */
+
+    const m = 10;
+
+    return (
+      (1 / (1 + Math.exp(-(this.curr_age - 18) / 2))) *
+      (1 / (1 + Math.exp((this.curr_age - 35) / 5))) *
+      m
+    );
   }
   move() {
-    //beings move according to a schedule, with a speed that is a factor of their masses.
-    this.pos.add(this.velocity); 
+    //beings move according to a schedule, with a speed that is a factor of their masses & energy.
+    this.pos.add(this.speed);
 
     this.constrain();
   }
-  constrain(){
-    if (this.pos.x+this.mass/2 >= width || this.pos.x - this.mass/2 <= 0){
-      this.velocity.x*=-1;
+  constrain() {
+    if (
+      this.pos.x + this.mass / 2 >= width ||
+      this.pos.x - this.mass / 2 <= 0
+    ) {
+      this.speed.x *= -1;
     }
-    if (this.pos.y + this.mass/2 > height || this.pos.y - this.mass/2 < 0) {
-      this.velocity.y *= -1;
+    if (
+      this.pos.y + this.mass / 2 >= height ||
+      this.pos.y - this.mass / 2 <= 0
+    ) {
+      this.speed.y *= -1;
     }
   }
   reproduce() {

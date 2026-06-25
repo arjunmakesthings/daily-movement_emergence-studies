@@ -21,7 +21,6 @@ class World {
 
     for (let being of this.beings) {
       being.exist();
-
       if (this.beings.length > 2) this.beings.reproduce;
     }
   }

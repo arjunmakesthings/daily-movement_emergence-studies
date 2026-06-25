@@ -51,13 +51,15 @@ function plot2(x, y) {
     https://www.thoughtco.com/normal-distribution-bell-curve-formula-3126278
     */
 
-    const sd = 100;
-    const mu = width / 2;
+    const s = 2;
+    const a = 7; 
+    const b = 5000;
 
-    let y =
-      80000 *
-      (1 / (sd * Math.sqrt(2 * Math.PI))) *
-      Math.exp(-((x - mu) * (x - mu)) / (2 * sd * sd));
+    let y = (Math.pow(s,
+      (-(Math.pow(x-a, 2)) / b)
+    ))*200
+
+    console.log(x,y); 
 
     point(x, y);
     plot2(x + 1, y);
