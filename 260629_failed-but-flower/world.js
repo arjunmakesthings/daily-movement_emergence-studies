@@ -5,7 +5,7 @@ class World {
     this.time = 0;
     this.killing_time = 0;
 
-    this.big_bang(1);
+    this.big_bang(1000);
   }
   big_bang(n) {
     for (let i = 0; i < n; i++) {
@@ -13,7 +13,7 @@ class World {
     }
   }
   exist() {
-    background(255);
+    // background(190);
 
     this.keep_time();
 
@@ -26,11 +26,14 @@ class World {
   }
   keep_time() {
     //on this world, time exists as a 24-second loop.
-    this.time = Math.floor((frameCount / 60) % 2);
+    this.time = Math.floor((frameCount / 60) % 1);
   }
   kill() {
     //as beings age, their probability to die increases. therefore, it is almost imminent if they are 1000.
-    if (this.time == 0) this.killing_time = Math.round(Math.random(0, 5));
+    if (this.time == 0) {
+      //find a new killing time for the day:
+      this.killing_time = Math.round(Math.random(0, 5));
+    }
 
     if (this.time == this.killing_time) {
       for (let i = 0; i < this.beings.length; i++) {

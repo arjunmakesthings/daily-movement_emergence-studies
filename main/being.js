@@ -1,18 +1,32 @@
 class Being {
   constructor(x, y) {
     this.pos = createVector(x, y);
-    this.curr_age = 1;
-    this.mass = 1;
-    this.energy = 0;
-    this.speed = createVector(1, 1);
+    this.curr_age = 0;
+    this.mass = 0.1;
+    this.energy = 0.1;
+    this.speed = createVector(0, 0);
 
     this.schedule = this.get_schedule();
+
+    this.destination = createVector(this.pos.x, this.pos.y);
   }
-  get_schedule() {}
+  get_schedule() {
+    /*
+    a schedule can be thought of as an array of time slots; such as: 
+    [
+    x,y => newpos
+    y,z => newpos
+
+    where x-y >= 1. 
+    ]
+    */
+  }
   exist() {
     this.body();
     this.age();
-    // this.move();
+    if (this.curr_age > 1) {
+      this.move();
+    }
   }
   body() {
     fill(0);
@@ -36,7 +50,10 @@ class Being {
     const a = 10; //max.
     const b = 18; //in how many steps is max achieved.
 
-    return (a * (1 - Math.exp(-5 * (this.curr_age / b)))) / (1 - Math.exp(-5));
+    const mass =
+      (a * (1 - Math.exp(-5 * (this.curr_age / b)))) / (1 - Math.exp(-5));
+
+    return Math.round(mass * 100) / 100;
   }
   get_energy() {
     //energy is like a bell curve.
@@ -49,15 +66,39 @@ class Being {
 
     const m = 10;
 
-    return (
+    const energy =
       (1 / (1 + Math.exp(-(this.curr_age - 18) / 2))) *
       (1 / (1 + Math.exp((this.curr_age - 35) / 5))) *
-      m
-    );
+      m;
+
+    return Math.round(energy * 1000) / 1000;
   }
   move() {
-    //beings move according to a schedule, with a speed that is a factor of their masses & energy.
-    this.pos.add(this.speed);
+    //temp case:
+    let d = dist(
+      this.pos.x,
+      this.pos.y,
+      this.destination.x,
+      this.destination.y,
+    );
+    if (d < this.mass * 2) {
+      this.destination = createVector(random(width), random(height));
+    }
+
+    let direction = p5.Vector.sub(this.destination, this.pos);
+    direction.normalize();
+
+    let speed = this.energy / this.mass;
+
+    //debug stuff:
+    // fill(255, 0, 0);
+    // circle(this.destination.x, this.destination.y, this.mass);
+    // stroke(0);
+    // strokeWeight(speed);
+    // line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
+
+    direction.mult(speed);
+    this.pos.add(direction);
 
     this.constrain();
   }
@@ -66,13 +107,13 @@ class Being {
       this.pos.x + this.mass / 2 >= width ||
       this.pos.x - this.mass / 2 <= 0
     ) {
-      this.speed.x *= -1;
+      this.speed.x *= -0.9;
     }
     if (
       this.pos.y + this.mass / 2 >= height ||
       this.pos.y - this.mass / 2 <= 0
     ) {
-      this.speed.y *= -1;
+      this.speed.y *= -0.9;
     }
   }
   reproduce() {

@@ -11,6 +11,8 @@ function setup() {
 	noStroke(); 
 
 	world = new World(); 
+
+	background(190);
 }
 
 function draw() {
