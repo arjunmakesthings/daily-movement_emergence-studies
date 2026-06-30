@@ -11,15 +11,21 @@ class Being {
     this.destination = createVector(this.pos.x, this.pos.y);
   }
   get_schedule() {
-    /*
-    a schedule can be thought of as an array of time slots; such as: 
-    [
-    x,y => newpos
-    y,z => newpos
+    let avl_time = Array.from({ length: 24 }, (_, i) => i),
+      schedule = [],
+      i = 0;
 
-    where x-y >= 1. 
-    ]
-    */
+    while (i < avl_time.length - 1) {
+      i = (i + Math.floor(Math.random() * 6)) % avl_time.length;
+      let a = avl_time.splice(i, 1)[0],
+        b = avl_time.splice(i, 1)[0];
+      schedule.push(
+        schedule.length ? [schedule[schedule.length - 1][1], a] : [a, b],
+      );
+    }
+
+    schedule.push([schedule[schedule.length - 1][1], schedule[0][0]]);
+    return schedule;
   }
   exist() {
     this.body();
@@ -74,6 +80,9 @@ class Being {
     return Math.round(energy * 1000) / 1000;
   }
   move() {
+    //move according to a schedule. 
+
+    
     //temp case:
     let d = dist(
       this.pos.x,
