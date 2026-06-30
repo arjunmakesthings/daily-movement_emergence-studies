@@ -1,40 +1,42 @@
+// function set_schedule() {
+//   let time = Array.from({ length: 24 }, (_, i) => i);
+//   let schedule = [];
+
+//   let i = 0;
+
+//   while (i < time.length - 1) {
+//     i = (i + Math.floor(Math.random() * 6)) % time.length;
+
+//     schedule.push(
+//       schedule.length === 0
+//         ? [time.splice(i, 1)[0], time.splice(i, 1)[0]]
+//         : [schedule[schedule.length - 1][1], time.splice(i, 1)[0]],
+//     );
+//   }
+
+//   schedule.push([schedule[schedule.length - 1][1], schedule[0][0]]);
+
+//   return schedule;
+// }
+
 function set_schedule() {
-  /*
-    a schedule can be thought of as an array of time slots; such as: 
-    [
-    x,y => newpos
-    y,z => newpos
+  let time = Array.from({ length: 24 }, (_, i) => i),
+    schedule = [],
+    i = 0;
 
-    where x-y >= 1. 
-    ]
-
-	which can be represented as a 2-dimensional array. 
-
-	[
-	[],
-	[],
-	[]
-	]
-
-	where arr[i].length === 12;
-	and arr[i]
-    */
-
-  let time = Array.from({ length: 24 }, (_, i) => i);
-  let schedule = Array.from({ length: 12 }, () => [[], []]);
-
-  //to divide into 12 sub-arrays, we need to go over the array 12 times. 
-
-  for (let i = 0; i<time.length/2; i++){
-	let n = Math.floor(Math.random()*time.length); 
-	let ne = (n + Math.floor(Math.random()*4) + time.length) % time.length;
-
-	schedule[i][0].push(time[n]);
-	schedule[i][1].push(time[ne]); 
+  while (i < time.length - 1) {
+    i = (i + Math.floor(Math.random() * 6)) % time.length;
+    let a = time.splice(i, 1)[0],
+      b = time.splice(i, 1)[0];
+    schedule.push(
+      schedule.length ? [schedule[schedule.length - 1][1], a] : [a, b],
+    );
   }
 
-  console.log(schedule); 
+  schedule.push([schedule[schedule.length - 1][1], schedule[0][0]]);
+  return schedule;
 }
 
-set_schedule(); 
+let schedule = set_schedule();
 
+console.log(schedule);
