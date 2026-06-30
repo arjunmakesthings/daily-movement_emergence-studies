@@ -13,9 +13,13 @@ class Being {
   get_schedule() {
     let avl_time = Array.from({ length: 24 }, (_, i) => i),
       schedule = [],
-      i = 0;
-
-    while (i < avl_time.length - 1) {
+      i = 0,
+      business = constrain(
+        map(this.curr_age, 0, 50, 1, avl_time.length - 1),
+        1,
+        avl_time.length - 1,
+      );
+    while (i < business) {
       i = (i + Math.floor(Math.random() * 6)) % avl_time.length;
       let a = avl_time.splice(i, 1)[0],
         b = avl_time.splice(i, 1)[0];
@@ -46,6 +50,18 @@ class Being {
       //as age increases, energy decreases; while mass increases.
       this.mass = this.get_mass();
       this.energy = this.get_energy();
+
+      if (this.curr_age < 6 && this.curr_age > 1) {
+        this.schedule = this.get_schedule();
+      } else if (this.curr_age > 6 && this.curr_age < 60) {
+        let n = Math.random();
+
+        if (n > 0.5) this.schedule = this.get_schedule();
+      } else if (this.curr_age > 60) {
+        let n = Math.random();
+
+        if (n < 0.25) this.schedule = this.get_schedule();
+      }
     }
   }
   get_mass() {
@@ -80,9 +96,8 @@ class Being {
     return Math.round(energy * 1000) / 1000;
   }
   move() {
-    //move according to a schedule. 
+    //move according to a schedule.
 
-    
     //temp case:
     let d = dist(
       this.pos.x,
