@@ -1,18 +1,17 @@
 class Being {
   constructor(x, y) {
     this.pos = createVector(x, y);
-    this.curr_age = 0;
-    this.mass = 0.1;
-    this.energy = 0.1;
+    this.curr_age = 18;
+    this.mass = this.get_mass();
+    this.energy = this.get_energy();
     this.speed = createVector(0, 0);
+    this.destinations = [];
+    this.destination = this.pos.copy();
 
     this.schedule = this.get_schedule();
-
-    this.destinations = [];
-    this.destination = this.pos;
   }
   get_schedule() {
-    let avl_time = Array.from({ length: 24 }, (_, i) => i),
+    let avl_time = Array.from({ length: day_length }, (_, i) => i),
       schedule = [],
       i = 0,
       business = constrain(
@@ -38,10 +37,6 @@ class Being {
   get_new_destinations(schedule) {
     this.destinations = [];
 
-    // const largest = schedule.reduce((best, curr) => {
-    //   return Math.abs(curr[1] - curr[0]) > Math.abs(best[1] - best[0]) ? curr : best;
-    // }, schedule[0]);
-
     schedule.forEach(() => {
       this.destinations.push(createVector(random(width), random(height)));
     });
@@ -56,6 +51,14 @@ class Being {
   body() {
     fill(0);
     circle(this.pos.x, this.pos.y, this.mass * 2);
+
+    if (debug_mode) {
+      fill(255, 0, 0);
+      circle(this.destination.x, this.destination.y, this.mass);
+      stroke(0);
+      strokeWeight(1);
+      line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
+    }
   }
   age() {
     //beings age by 1 unit a day.
@@ -133,13 +136,6 @@ class Being {
     direction.normalize();
 
     let speed = this.energy / this.mass;
-
-    //debug stuff:
-    // fill(255, 0, 0);
-    // circle(this.destination.x, this.destination.y, this.mass);
-    // stroke(0);
-    // strokeWeight(speed);
-    // line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
 
     direction.mult(speed);
     this.pos.add(direction);

@@ -5,7 +5,7 @@ class World {
     this.time = 0;
     this.killing_time = 0;
 
-    this.big_bang(10);
+    this.big_bang(init_population);
   }
   big_bang(n) {
     for (let i = 0; i < n; i++) {
@@ -16,9 +16,10 @@ class World {
     background(255);
 
     this.keep_time();
-
-    //this.kill();
-
+    this.sustain_beings();
+    this.kill_beings();
+  }
+  sustain_beings() {
     for (let being of this.beings) {
       being.exist();
       if (this.beings.length > 2) this.beings.reproduce;
@@ -26,20 +27,24 @@ class World {
   }
   keep_time() {
     //on this world, time exists as a 24-second loop.
-    this.time = Math.floor((frameCount / 60) % 3);
+    this.time = Math.floor((frameCount / 60) % day_length);
   }
-  kill() {
-    //as beings age, their probability to die increases. therefore, it is almost imminent if they are 1000.
-    if (this.time == 0) this.killing_time = Math.round(Math.random(0, 5));
+  kill_beings() {
+    //as beings age, their probability to die increases. therefore, it is almost imminent if they are 100.
+    if (this.time === 0) {
+      this.killing_time = Math.floor(Math.random() * day_length);
+    }
 
-    if (this.time == this.killing_time) {
-      for (let i = 0; i < this.beings.length; i++) {
-        let chance = Math.random().toFixed(2);
-        let p = this.beings[i].curr_age / 1000;
+    if (this.time !== this.killing_time) return;
 
-        if (p > chance) {
-          this.beings.splice(i, 1);
-        }
+    for (let i = this.beings.length - 1; i >= 0; i--) {
+      const age = this.beings[i].curr_age;
+      const age_f = constrain(age / 100, 0, 1);
+
+      const chance_of_death = 0.002 + 0.35 * Math.pow(age_f, 3);
+
+      if (Math.random() < chance_of_death) {
+        this.beings.splice(i, 1);
       }
     }
   }
