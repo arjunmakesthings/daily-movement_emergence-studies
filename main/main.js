@@ -3,7 +3,7 @@ world; container; places; beings; time; movement; schedule; software-interpretat
 */
 
 let world;
-let init_population = 10;
+let init_population = 100;
 let day_length = 24;
 let debug_mode = true;
 
@@ -20,7 +20,7 @@ function draw() {
   world.exist();
 
   if (debug_mode) {
-    debug();
+    // debug();
   }
 }
 

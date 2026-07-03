@@ -50,7 +50,7 @@ class Being {
   }
   body() {
     fill(0);
-    circle(this.pos.x, this.pos.y, this.mass * 2);
+    circle(this.pos.x, this.pos.y, this.mass);
 
     if (debug_mode) {
       fill(255, 0, 0);
@@ -114,28 +114,24 @@ class Being {
     return Math.round(energy * 1000) / 1000;
   }
   move() {
-    //move according to a schedule.
-    for (let i = 0; i < this.schedule.length; i++) {
-      if (world.time == this.schedule[i][0]) {
-        this.destination.set(this.destinations[i]);
-      }
-    }
-
-    //temp case:
     let d = dist(
       this.pos.x,
       this.pos.y,
       this.destination.x,
       this.destination.y,
     );
-    if (d < this.mass * 2) {
-      this.destination = createVector(random(width), random(height));
+
+    //move according to a schedule.
+    for (let i = 0; i < this.schedule.length; i++) {
+      if (world.time == this.schedule[i][0] && d < this.mass) {
+        this.destination.set(this.destinations[i]);
+      }
     }
 
     let direction = p5.Vector.sub(this.destination, this.pos);
     direction.normalize();
 
-    let speed = this.energy / this.mass;
+    let speed = this.energy / this.mass * (d * 0.005) ;
 
     direction.mult(speed);
     this.pos.add(direction);
