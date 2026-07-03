@@ -8,7 +8,8 @@ class Being {
 
     this.schedule = this.get_schedule();
 
-    this.destination = createVector(this.pos.x, this.pos.y);
+    this.destinations = [];
+    this.destination = this.pos;
   }
   get_schedule() {
     let avl_time = Array.from({ length: 24 }, (_, i) => i),
@@ -29,7 +30,21 @@ class Being {
     }
 
     schedule.push([schedule[schedule.length - 1][1], schedule[0][0]]);
+
+    this.get_new_destinations(schedule);
+
     return schedule;
+  }
+  get_new_destinations(schedule) {
+    this.destinations = [];
+
+    // const largest = schedule.reduce((best, curr) => {
+    //   return Math.abs(curr[1] - curr[0]) > Math.abs(best[1] - best[0]) ? curr : best;
+    // }, schedule[0]);
+
+    schedule.forEach(() => {
+      this.destinations.push(createVector(random(width), random(height)));
+    });
   }
   exist() {
     this.body();
@@ -40,7 +55,7 @@ class Being {
   }
   body() {
     fill(0);
-    circle(this.pos.x, this.pos.y, this.mass);
+    circle(this.pos.x, this.pos.y, this.mass * 2);
   }
   age() {
     //beings age by 1 unit a day.
@@ -97,6 +112,11 @@ class Being {
   }
   move() {
     //move according to a schedule.
+    for (let i = 0; i < this.schedule.length; i++) {
+      if (world.time == this.schedule[i][0]) {
+        this.destination.set(this.destinations[i]);
+      }
+    }
 
     //temp case:
     let d = dist(

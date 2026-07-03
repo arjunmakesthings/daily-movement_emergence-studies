@@ -16,7 +16,7 @@ function setup() {
 function draw() {
 	world.exist(); 
 
-	// debug();
+	debug();
 }
 
 function debug(){
@@ -25,6 +25,5 @@ function debug(){
     "age: " + world.beings[0].curr_age,
     "mass: " + world.beings[0].mass,
     "energy: " + world.beings[0].energy,
-    "schedule: " + world.beings[0].schedule,
   ); 
 }
