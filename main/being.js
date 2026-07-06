@@ -1,7 +1,7 @@
 class Being {
-  constructor(x, y) {
+  constructor(x, y, curr_age) {
     this.pos = createVector(x, y);
-    this.curr_age = 17;
+    this.curr_age = curr_age;
     this.mass = this.get_mass();
     this.energy = this.get_energy();
     this.speed = createVector(0, 0);
@@ -49,7 +49,7 @@ class Being {
     }
   }
   body() {
-    fill(0);
+    fill(0, map(this.curr_age, 0, 60, 1, 255));
     circle(this.pos.x, this.pos.y, this.mass);
 
     if (debug_mode) {
@@ -157,10 +157,13 @@ class Being {
 
     for (let being of world.beings) {
       if (being === this) continue; //can't reproduce yourself.
-      if (this.curr_age < 18 || being.curr_age < 18 || this.curr_age > 45) continue;
+      if (this.curr_age < 18 || being.curr_age < 18 || this.curr_age > 45)
+        continue;
 
       const d = p5.Vector.dist(this.pos, being.pos);
       const min_d = (this.mass + being.mass) / 2;
+
+      let possible_times = this.schedule.map((slot) => slot[0]);
 
       if (d < min_d) {
         //probability is high (not 1) when between 18 - 30 and reduces afterwards and close to 0 after 40.
@@ -174,8 +177,10 @@ class Being {
             new Being(
               (this.pos.x + being.pos.x) / 2,
               (this.pos.y + being.pos.y) / 2,
+              0,
             ),
           );
+          break;
         }
       }
     }

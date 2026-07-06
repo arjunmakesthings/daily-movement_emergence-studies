@@ -9,7 +9,8 @@ class World {
   }
   big_bang(n) {
     for (let i = 0; i < n; i++) {
-      this.beings.push(new Being(random(50, width), random(50, height)));
+      let age = Math.round(constrain(randomGaussian(18, 20), 18, 60));
+      this.beings.push(new Being(random(50, width), random(50, height), age));
     }
   }
   exist() {
