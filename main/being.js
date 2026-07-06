@@ -152,7 +152,8 @@ class Being {
       this.speed.y *= -0.9;
     }
   }
-  reproduce() {
+  reproduce(n) {
+    if (n <= 2) return;
     //beings in close proximity to each other give rise to another being.
 
     for (let being of world.beings) {

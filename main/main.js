@@ -18,7 +18,7 @@ function setup() {
 }
 
 function draw() {
-  world.exist();
+  world.run();
 
   if (debug_mode) {
     debug();
