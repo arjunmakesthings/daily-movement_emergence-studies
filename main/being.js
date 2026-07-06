@@ -1,7 +1,7 @@
 class Being {
   constructor(x, y) {
     this.pos = createVector(x, y);
-    this.curr_age = 18;
+    this.curr_age = 17;
     this.mass = this.get_mass();
     this.energy = this.get_energy();
     this.speed = createVector(0, 0);
@@ -131,7 +131,7 @@ class Being {
     let direction = p5.Vector.sub(this.destination, this.pos);
     direction.normalize();
 
-    let speed = this.energy / this.mass * (d * 0.005) ;
+    let speed = (this.energy / this.mass) * (d * 0.005);
 
     direction.mult(speed);
     this.pos.add(direction);
@@ -154,5 +154,30 @@ class Being {
   }
   reproduce() {
     //beings in close proximity to each other give rise to another being.
+
+    for (let being of world.beings) {
+      if (being === this) continue; //can't reproduce yourself.
+      if (this.curr_age < 18 || being.curr_age < 18 || this.curr_age > 45) continue;
+
+      const d = p5.Vector.dist(this.pos, being.pos);
+      const min_d = (this.mass + being.mass) / 2;
+
+      if (d < min_d) {
+        //probability is high (not 1) when between 18 - 30 and reduces afterwards and close to 0 after 40.
+        let p =
+          0.2 *
+          (1 / (1 + Math.exp(-(this.curr_age - 18) / 2))) *
+          (1 / (1 + Math.exp((this.curr_age - 40) / 2)));
+
+        if (Math.random() < p) {
+          world.beings.push(
+            new Being(
+              (this.pos.x + being.pos.x) / 2,
+              (this.pos.y + being.pos.y) / 2,
+            ),
+          );
+        }
+      }
+    }
   }
 }

@@ -3,12 +3,13 @@ world; container; places; beings; time; movement; schedule; software-interpretat
 */
 
 let world;
-let init_population = 100;
-let day_length = 24;
+let init_population = 50;
+let day_length = 3;
 let debug_mode = true;
 
 function setup() {
-  createCanvas(800, 800); //square.
+  // createCanvas(windowWidth, windowHeight);
+  createCanvas(800,800); 
 
   //p5 stuff; globally; once:
   noStroke();
@@ -20,17 +21,17 @@ function draw() {
   world.exist();
 
   if (debug_mode) {
-    // debug();
+    debug();
   }
 }
 
 function debug() {
   console.log(
-    "time: " + world.time,
-    "age: " + world.beings[0].curr_age,
-    "mass: " + world.beings[0].mass,
-    "energy: " + world.beings[0].energy,
-    "schedule: " + world.beings[0].schedule,
-	"destinations: " + world.beings[0].destination
+    "time: " + world.time + "\n",
+    "age: " + world.beings[0].curr_age + "\n",
+    "mass: " + world.beings[0].mass + "\n",
+    "energy: " + world.beings[0].energy + "\n",
+    "schedule: " + world.beings[0].schedule + "\n",
+    "destinations: " + world.beings[0].destination + "\n",
   );
 }

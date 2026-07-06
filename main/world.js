@@ -17,12 +17,42 @@ class World {
 
     this.keep_time();
     this.sustain_beings();
-    this.kill_beings();
   }
   sustain_beings() {
     for (let being of this.beings) {
       being.exist();
-      if (this.beings.length > 2) this.beings.reproduce;
+      if (this.beings.length > 2) {
+        being.reproduce();
+        // this.kill_beings();
+      }
+      this.avoid_collisions();
+    }
+  }
+  avoid_collisions() {
+    for (let i = 0; i < this.beings.length; i++) {
+      for (let j = i + 1; j < this.beings.length; j++) {
+        const a = this.beings[i];
+        const b = this.beings[j];
+
+        const max_d = (a.mass + b.mass) / 2;
+        const delta = p5.Vector.sub(b.pos, a.pos);
+        let d = delta.mag();
+
+        if (d === 0) {
+          //same spot.
+          delta.set(random(-1, 1), random(-1, 1));
+          d = delta.mag();
+        }
+
+        if (d < max_d) {
+          const overlap = max_d - d;
+          delta.normalize();
+          delta.mult(overlap / 2);
+
+          a.pos.sub(delta);
+          b.pos.add(delta);
+        }
+      }
     }
   }
   keep_time() {
