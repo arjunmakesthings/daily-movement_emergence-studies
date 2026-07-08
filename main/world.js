@@ -58,7 +58,7 @@ class World {
     if (this.time !== this.killing_time) return;
 
     for (let i = this.beings.length - 1; i >= 0; i--) {
-      const age = this.beings[i].curr_age;
+      const age = this.beings[i].age;
       const age_f = constrain(age / 100, 0, 1);
 
       const chance_of_death = 0.002 + 0.35 * Math.pow(age_f, 3);
@@ -69,7 +69,7 @@ class World {
     }
   }
   /*
-  prevent the possibility of two beings taking up the same space in the world. 
+  prevent the possibility of two beings taking up the same space in the world, when beings >2.
   */
   prevent_collisions() {
     for (let i = 0; i < this.beings.length; i++) {

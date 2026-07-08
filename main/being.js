@@ -1,55 +1,26 @@
 class Being {
-  constructor(x, y, curr_age) {
+  constructor(x, y, age) {
     this.pos = createVector(x, y);
-    this.curr_age = curr_age;
+    this.age = age;
     this.mass = this.get_mass();
     this.energy = this.get_energy();
     this.speed = createVector(0, 0);
     this.destinations = [];
     this.destination = this.pos.copy();
-
-    this.schedule = this.get_schedule();
+    this.schedule = this.get_schedule(this.age);
   }
-  get_schedule() {
-    let avl_time = Array.from({ length: day_length }, (_, i) => i),
-      schedule = [],
-      i = 0,
-      business = constrain(
-        map(this.curr_age, 0, 50, 1, avl_time.length - 1),
-        1,
-        avl_time.length - 1,
-      );
-    while (i < business) {
-      i = (i + Math.floor(Math.random() * 6)) % avl_time.length;
-      let a = avl_time.splice(i, 1)[0],
-        b = avl_time.splice(i, 1)[0];
-      schedule.push(
-        schedule.length ? [schedule[schedule.length - 1][1], a] : [a, b],
-      );
-    }
-
-    schedule.push([schedule[schedule.length - 1][1], schedule[0][0]]);
-
-    this.get_new_destinations(schedule);
-
-    return schedule;
-  }
-  get_new_destinations(schedule) {
-    this.destinations = [];
-
-    schedule.forEach(() => {
-      this.destinations.push(createVector(random(width), random(height)));
-    });
-  }
+  /*
+  beings age, exist & move.
+  */
   exist() {
     this.body();
-    this.age();
-    if (this.curr_age > 1) {
+    this.get_curr_age();
+    if (this.age > 1) {
       this.move();
     }
   }
   body() {
-    fill(0, map(this.curr_age, 0, 60, 1, 255));
+    fill(0, map(this.age, 0, 60, 1, 255));
     circle(this.pos.x, this.pos.y, this.mass);
 
     if (debug_mode) {
@@ -59,59 +30,6 @@ class Being {
       strokeWeight(1);
       line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
     }
-  }
-  age() {
-    //beings age by 1 unit a day.
-    if (world.time == 0 && frameCount % 60 == 0) {
-      this.curr_age += 1;
-
-      //as age increases, energy decreases; while mass increases.
-      this.mass = this.get_mass();
-      this.energy = this.get_energy();
-
-      if (this.curr_age < 6 && this.curr_age > 1) {
-        this.schedule = this.get_schedule();
-      } else if (this.curr_age > 6 && this.curr_age < 60) {
-        let n = Math.random();
-
-        if (n > 0.5) this.schedule = this.get_schedule();
-      } else if (this.curr_age > 60) {
-        let n = Math.random();
-
-        if (n < 0.25) this.schedule = this.get_schedule();
-      }
-    }
-  }
-  get_mass() {
-    //for a given current age, calculate mass.
-
-    //mass is an asymptotic-exponential-growth graph.
-
-    const a = 10; //max.
-    const b = 18; //in how many steps is max achieved.
-
-    const mass =
-      (a * (1 - Math.exp(-5 * (this.curr_age / b)))) / (1 - Math.exp(-5));
-
-    return Math.round(mass * 100) / 100;
-  }
-  get_energy() {
-    //energy is like a bell curve.
-
-    /*
-    https://www.desmos.com/calculator/3iioyvma2l
-
-    f(x) = y = e^(-((x-a)^2) / b).
-    */
-
-    const m = 10;
-
-    const energy =
-      (1 / (1 + Math.exp(-(this.curr_age - 18) / 2))) *
-      (1 / (1 + Math.exp((this.curr_age - 35) / 5))) *
-      m;
-
-    return Math.round(energy * 1000) / 1000;
   }
   move() {
     let d = dist(
@@ -131,13 +49,16 @@ class Being {
     let direction = p5.Vector.sub(this.destination, this.pos);
     direction.normalize();
 
-    let speed = (this.energy / this.mass) * (d * 0.005);
+    let speed = (this.energy / this.mass) * frameRate * 0.5;
 
     direction.mult(speed);
     this.pos.add(direction);
 
     this.constrain();
   }
+  /*
+  beings are constrained to a surface.
+  */
   constrain() {
     if (
       this.pos.x + this.mass / 2 >= width ||
@@ -152,14 +73,16 @@ class Being {
       this.speed.y *= -0.9;
     }
   }
+  /*
+  when more than 2 beings exist, and are in close proximity, they can reproduce.
+  */
   reproduce(n) {
     if (n <= 2) return;
     //beings in close proximity to each other give rise to another being.
 
     for (let being of world.beings) {
       if (being === this) continue; //can't reproduce yourself.
-      if (this.curr_age < 18 || being.curr_age < 18 || this.curr_age > 45)
-        continue;
+      if (this.age < 18 || being.curr_age < 18 || this.age > 45) continue;
 
       const d = p5.Vector.dist(this.pos, being.pos);
       const min_d = (this.mass + being.mass) / 2;
@@ -170,8 +93,8 @@ class Being {
         //probability is high (not 1) when between 18 - 30 and reduces afterwards and close to 0 after 40.
         let p =
           0.2 *
-          (1 / (1 + Math.exp(-(this.curr_age - 18) / 2))) *
-          (1 / (1 + Math.exp((this.curr_age - 40) / 2)));
+          (1 / (1 + Math.exp(-(this.age - 18) / 2))) *
+          (1 / (1 + Math.exp((this.age - 40) / 2)));
 
         if (Math.random() < p) {
           world.beings.push(
@@ -185,5 +108,120 @@ class Being {
         }
       }
     }
+  }
+  /*
+  ----------------------------------------
+  getters:
+  ----------------------------------------
+  */
+
+  /*
+  for given age, get a schedule based on the busyness (the older you are, the more busy you get).
+  */
+  get_schedule(age) {
+    let avl_time = Array.from({ length: day_length }, (_, i) => i);
+    let schedule = [];
+
+    //calculate available time slots based on age.
+    const min = 2;
+    const max = 12;
+    const peak = 25;
+    const sigma = 10; //spread-width.
+
+    const g = Math.exp(-Math.pow(age - peak, 2) / (2 * sigma * sigma));
+    const mean_busyness = min + (max - min) * g;
+
+    const spread = 1.25 + (1 - g) * 3.5;
+
+    let busyness = Math.round(randomGaussian(mean_busyness, spread));
+    busyness = constrain(busyness, min, max);
+
+    //^ this is the length of our to-be-created schedule array.
+
+    let i = 0;
+
+    while (i < busyness) {
+      i = (i + Math.floor(Math.random() * 6)) % avl_time.length;
+      let a = avl_time.splice(i, 1)[0],
+        b = avl_time.splice(i, 1)[0];
+      schedule.push(
+        schedule.length ? [schedule[schedule.length - 1][1], a] : [a, b],
+      );
+    }
+
+    schedule.push([schedule[schedule.length - 1][1], schedule[0][0]]);
+
+    this.get_new_destinations(schedule);
+
+    return schedule;
+  }
+  /*
+  for a given array of schedules, get a set of destinations.
+  */
+  get_new_destinations(schedule) {
+    this.destinations = [];
+
+    schedule.forEach(() => {
+      this.destinations.push(createVector(random(width), random(height)));
+    });
+  }
+  /*
+  based on the time of the world, get the current age.
+  */
+  get_curr_age() {
+    //beings age by 1 unit a day.
+    if (world.time == 0 && frameCount % 60 == 0) {
+      this.age += 1;
+
+      //as age increases, energy decreases; while mass increases.
+      this.mass = this.get_mass();
+      this.energy = this.get_energy();
+
+      if (this.age < 6 && this.age > 1) {
+        this.schedule = this.get_schedule(this.age);
+      } else if (this.age > 6 && this.age < 60) {
+        let n = Math.random();
+
+        if (n > 0.5) this.schedule = this.get_schedule(this.age);
+      } else if (this.age > 60) {
+        let n = Math.random();
+
+        if (n < 0.25) this.schedule = this.get_schedule(this.age);
+      }
+    }
+  }
+  /*
+  for a given age, calculate mass.
+  */
+  get_mass() {
+    //mass is an asymptotic-exponential-growth graph.
+
+    const a = 10; //max.
+    const b = 18; //in how many steps is max achieved.
+
+    const mass = (a * (1 - Math.exp(-5 * (this.age / b)))) / (1 - Math.exp(-5));
+
+    return Math.round(mass * 100) / 100;
+  }
+  /*
+  for a given age, calculate energy. 
+  */
+  get_energy() {
+    //energy is like a bell curve.
+
+    /*
+    https://www.desmos.com/calculator/3iioyvma2l
+
+    f(x) = y = e^(-((x-a)^2) / b).
+    */
+
+    const m = 10;
+
+    const energy =
+      (1 / (1 + Math.exp(-(this.age - 18) / 2))) *
+      (1 / (1 + Math.exp((this.age - 35) / 5))) *
+      m;
+
+    return Math.round(energy * 1000) / 1000;
   }
 }
