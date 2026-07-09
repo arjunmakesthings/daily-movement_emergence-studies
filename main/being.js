@@ -8,6 +8,12 @@ class Being {
     this.destinations = [];
     this.destination = this.pos.copy();
     this.schedule = this.get_schedule(this.age);
+
+    /*
+    working!!!!!!!!!`
+    */
+    //we store the maxes for each equation basically. 
+    this.genetics = 
   }
   /*
   beings age, exist & move.
@@ -47,7 +53,7 @@ class Being {
     let direction = p5.Vector.sub(this.destination, this.pos);
     direction.normalize();
 
-    let speed = ((this.energy / this.mass) * Math.sqrt(d))*0.5;
+    let speed = (this.energy / this.mass) * Math.sqrt(d) * 0.5;
 
     direction.mult(speed);
     this.pos.add(direction);
@@ -169,7 +175,8 @@ class Being {
   */
   get_curr_age() {
     //beings age by 1 unit a day.
-    if (world.time == 0 && frameCount % 60 == 0) {
+    // if (world.time == 0 && frameCount % 60 == 0) {
+    if (frameCount % (60 * day_length) === 0) {
       this.age += 1;
 
       //as age increases, energy decreases; while mass increases.
@@ -195,7 +202,7 @@ class Being {
   get_mass() {
     //mass is an asymptotic-exponential-growth graph.
 
-    const a = 10; //max.
+    const a = 20; //max.
     const b = 18; //in how many steps is max achieved.
 
     const mass = (a * (1 - Math.exp(-5 * (this.age / b)))) / (1 - Math.exp(-5));

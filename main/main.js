@@ -6,8 +6,8 @@ let world;
 
 //vars to change:
 let init_population = 200;
-let day_length = 24;
-let debug_mode = false;
+let day_length = 5;
+let debug_mode = true;
 
 function setup() {
   // createCanvas(windowWidth, windowHeight);
