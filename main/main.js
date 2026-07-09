@@ -5,9 +5,9 @@ world; container; places; beings; time; movement; schedule; software-interpretat
 let world;
 
 //vars to change:
-let init_population = 2;
+let init_population = 200;
 let day_length = 24;
-let debug_mode = true;
+let debug_mode = false;
 
 function setup() {
   // createCanvas(windowWidth, windowHeight);
@@ -17,22 +17,28 @@ function setup() {
   noStroke();
 
   world = new World();
+  world.initialize(init_population); 
 }
 
 function draw() {
   world.run();
 
-  debug_mode ? debug() : loop();
+  if (debug_mode) debug();
 }
 
 function debug(n = 0) {
-  //show visually: 
-  textSize(12); 
-  noStroke(); 
+  //show visually:
+  textSize(12);
+  noStroke();
+  fill (255,0,0); 
 
-  let tracked = world.beings[n]; 
+  let tracked = world.beings[n];
   textAlign(CENTER);
-  text ("[" + n + "]", tracked.pos.x + tracked.mass, tracked.pos.y + tracked.mass/2); 
+  text(
+    "[" + n + "]",
+    tracked.pos.x + tracked.mass * 1.5,
+    tracked.pos.y + tracked.mass / 2,
+  );
 
   console.log(
     "beings[" + n + "]" + "\n",
@@ -47,4 +53,11 @@ function debug(n = 0) {
       tracked.destination.y +
       "\n",
   );
+
+  for (let i = 0; i < world.hotspots.length; i++) {
+    strokeWeight(5);
+    stroke(255, 0, 0);
+
+    point(world.hotspots[i][0], world.hotspots[i][1]);
+  }
 }

@@ -24,8 +24,6 @@ class Being {
     circle(this.pos.x, this.pos.y, this.mass);
 
     if (debug_mode) {
-      fill(255, 0, 0);
-      circle(this.destination.x, this.destination.y, this.mass);
       stroke(0);
       strokeWeight(1);
       line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
@@ -49,7 +47,7 @@ class Being {
     let direction = p5.Vector.sub(this.destination, this.pos);
     direction.normalize();
 
-    let speed = (this.energy / this.mass) * frameRate * 0.5;
+    let speed = ((this.energy / this.mass) * Math.sqrt(d))*0.5;
 
     direction.mult(speed);
     this.pos.add(direction);
@@ -64,13 +62,13 @@ class Being {
       this.pos.x + this.mass / 2 >= width ||
       this.pos.x - this.mass / 2 <= 0
     ) {
-      this.speed.x *= -0.9;
+      this.speed.x *= -1;
     }
     if (
       this.pos.y + this.mass / 2 >= height ||
       this.pos.y - this.mass / 2 <= 0
     ) {
-      this.speed.y *= -0.9;
+      this.speed.y *= -1;
     }
   }
   /*
@@ -162,7 +160,8 @@ class Being {
     this.destinations = [];
 
     schedule.forEach(() => {
-      this.destinations.push(createVector(random(width), random(height)));
+      let rand_dest = random(world.hotspots);
+      this.destinations.push(createVector(rand_dest[0], rand_dest[1]));
     });
   }
   /*
