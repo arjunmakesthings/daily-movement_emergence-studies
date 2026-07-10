@@ -83,8 +83,7 @@ class Being {
   /*
   when more than 2 beings exist, and are in close proximity, they can reproduce.
   */
-  reproduce(n) {
-    if (n <= 2) return;
+  reproduce() {
     //beings in close proximity to each other give rise to another being.
 
     for (let being of world.beings) {

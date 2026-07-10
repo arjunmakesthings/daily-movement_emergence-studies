@@ -99,15 +99,14 @@ class World {
     for (let being of this.beings) {
       being.exist();
 
-      // if (this.beings.length > 2) {
-      //   // being.reproduce();
-      //   // this.kill_beings();
-      //   this.prevent_collisions();
-      // }
+      if (this.beings.length > 2) {
+        // being.reproduce();
+      }
     }
 
-    if (this.beings.length > 2){
-      this.prevent_collisions(); 
+    if (this.beings.length > 2) {
+      this.prevent_collisions();
+      this.kill_beings();
     }
   }
   /*
