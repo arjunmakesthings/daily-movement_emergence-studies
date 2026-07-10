@@ -28,13 +28,12 @@ class Being {
     if (this.age > 1) {
       this.move();
     }
-    this.reproduce();
   }
   body() {
     // fill(0, map(this.age, 0, 60, 1, 255));
 
-    if (this.age > 1){
-      this.r=0;
+    if (this.age > 1) {
+      this.r = 0;
     }
     fill(this.r, 0, 0);
     circle(this.pos.x, this.pos.y, this.mass);
@@ -120,21 +119,24 @@ class Being {
   //   }
   // }
   // }
-  reproduce(partner) {
-    if (!partner) return false;
-    if (this.age < 18 || this.age > 45) return false;
-    if (partner.age < 18 || partner.age > 45) return false;
+  reproduce() {
+    const neighbours = this.get_neighbours();
+    if (neighbours.length < 1) return null;
 
     const p =
       0.2 *
       (1 / (1 + Math.exp(-(this.age - 18) / 2))) *
       (1 / (1 + Math.exp((this.age - 40) / 2)));
 
-    if (Math.random() >= p) {
-      return false;
-    } else {
-      return true;
-    }
+    const neighbour = random(neighbours);
+    if (Math.random() >= p) return null;
+
+    return new Being(
+      (this.pos.x + neighbour.pos.x) / 2,
+      (this.pos.y + neighbour.pos.y) / 2,
+      0,
+      255,
+    );
   }
   /*
   ----------------------------------------
@@ -254,7 +256,7 @@ class Being {
     return Math.round(energy * 1000) / 1000;
   }
   /*
-  for a being, get neighbours within a specific radius.
+  for a being, return an array of neighbours within a specific radius.
   */
   get_neighbours(radius = maximum_mass * 2, beings = world.beings) {
     const r2 = radius * radius;

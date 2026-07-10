@@ -5,7 +5,7 @@ world; container; places; beings; time; movement; schedule; software-interpretat
 let world;
 
 //vars to change:
-let init_population = 200;
+let init_population = 300;
 let day_length = 10;
 let debug_mode = false;
 

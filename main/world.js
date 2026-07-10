@@ -110,7 +110,7 @@ class World {
 
     if (this.beings.length > 2) {
       this.prevent_collisions();
-      this.kill_beings();
+      this.kill_and_make_beings();
     }
   }
   /*
@@ -128,22 +128,33 @@ class World {
   /*
   kill beings, when beings >2.
   */
-  kill_beings() {
+  kill_and_make_beings() {
     //as beings age, their probability to die increases. therefore, it is almost imminent if they are 100.
     if (this.time === 0) {
       this.killing_time = Math.floor(Math.random() * day_length);
     }
 
-    if (this.time !== this.killing_time) return;
+    if (this.time == this.killing_time && this.beings.length > 0.95 * init_population) {
+      for (let i = this.beings.length - 1; i >= 0; i--) {
+        const age = this.beings[i].age;
+        const age_f = constrain(age / 100, 0, 1);
 
-    for (let i = this.beings.length - 1; i >= 0; i--) {
-      const age = this.beings[i].age;
-      const age_f = constrain(age / 100, 0, 1);
+        const chance_of_death = 0.0002 + 0.12 * Math.pow(age_f, 3);
 
-      const chance_of_death = 0.002 + 0.35 * Math.pow(age_f, 3);
+        if (Math.random() < chance_of_death) {
+          this.beings.splice(i, 1);
+        }
+      }
+    } else if (this.beings.length < init_population) {
+      const valid_beings = this.beings.filter(
+        (being) => being.age >= 18 && being.age <= 45,
+      );
 
-      if (Math.random() < chance_of_death) {
-        this.beings.splice(i, 1);
+      let i = 0;
+      while (this.beings.length < init_population && i < valid_beings.length) {
+        const newborn = valid_beings[i].reproduce();
+        if (newborn) this.beings.push(newborn);
+        i++;
       }
     }
   }
@@ -255,10 +266,9 @@ class World {
   prevent_collisions() {
     const cellSize = maximum_mass * 3;
     const passes = 2;
-    const slop = 0.5; // ignore tiny overlaps that cause jitter
+    const slop = 0.5; // ignore tiny overlaps that cause jitter.
 
     const cellKey = (cx, cy) => `${cx},${cy}`;
-    let newborns = [];
 
     for (let pass = 0; pass < passes; pass++) {
       const grid = new Map();
@@ -310,14 +320,6 @@ class World {
             const overlap = max_d - d;
             if (overlap <= slop) continue;
 
-            if (frameCount % 120 == 0) {
-              const rep_chance = a.reproduce(b);
-
-              if (rep_chance) {
-                newborns.push(new Being(a.pos.x, a.pos.y, 0, 255));
-              }
-            }
-
             const push = (overlap - slop) / 2;
             delta.normalize();
             delta.mult(push);
@@ -327,11 +329,6 @@ class World {
           }
         }
       }
-    }
-    if (newborns.length) {
-      this.beings.push(...newborns);
-    }else{
-      return;
     }
   }
 }
