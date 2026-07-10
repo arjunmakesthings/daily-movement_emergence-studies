@@ -4,7 +4,7 @@ class Being {
     this.age = age;
 
     this.maxes = {
-      max_mass: constrain(Math.floor(randomGaussian(10, 6)), 5, 20),
+      max_mass: constrain(Math.floor(randomGaussian(10, 6)), 5, maximum_mass),
       max_mass_age: Math.floor(randomGaussian(18, 1)),
       speed_mult: random(0.05, 0.2),
     };

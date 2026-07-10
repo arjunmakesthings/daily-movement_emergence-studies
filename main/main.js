@@ -6,8 +6,10 @@ let world;
 
 //vars to change:
 let init_population = 200;
-let day_length = 5;
-let debug_mode = false;
+let day_length = 10;
+let debug_mode = false
+
+const maximum_mass = 20;
 
 function setup() {
   // createCanvas(windowWidth, windowHeight);
@@ -17,7 +19,7 @@ function setup() {
   noStroke();
 
   world = new World();
-  world.initialize(init_population); 
+  world.initialize(init_population);
 }
 
 function draw() {
@@ -30,7 +32,7 @@ function debug(n = 0) {
   //show visually:
   textSize(12);
   noStroke();
-  fill (255,0,0); 
+  fill(255, 0, 0);
 
   let tracked = world.beings[n];
   textAlign(CENTER);
