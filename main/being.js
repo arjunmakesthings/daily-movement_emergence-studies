@@ -88,37 +88,8 @@ class Being {
     }
   }
   /*
-  when more than 2 beings exist, and are in close proximity with atleast one of them between 18 - 45, they have a chance of reproducing.
+  when the world is out of balance, beings in close proximity of each other (between ages 18-45) have a chance of reproducing.
   */
-  // reproduce() {
-  //   if (this.age < 18 || this.age > 45) return;
-
-  //   // const neighbours = this.get_neighbours();
-
-  //   const neighbours = this.get_neighbours().filter(
-  //     (being) => being.age >= 18,
-  //   );
-
-  //   //probability is high (not 1) when between 18 - 30 and reduces afterwards and close to 0 after 40.
-
-  //   for (let neighbour of neighbours){
-  //   let p =
-  //     0.2 *
-  //     (1 / (1 + Math.exp(-(this.age - 18) / 2))) *
-  //     (1 / (1 + Math.exp((this.age - 40) / 2)));
-
-  //   if (Math.random() < p) {
-  //     world.beings.push(
-  //       new Being(
-  //         (this.pos.x + neighbour.pos.x) / 2,
-  //         (this.pos.y + neighbour.pos.y) / 2,
-  //         0,
-  //         255
-  //       ),
-  //     );
-  //   }
-  // }
-  // }
   reproduce() {
     const neighbours = this.get_neighbours();
     if (neighbours.length < 1) return null;
