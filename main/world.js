@@ -12,7 +12,7 @@ class World {
   initialize(n) {
     for (let i = 0; i < n; i++) {
       let age = Math.round(constrain(randomGaussian(18, 20), 18, 60));
-      this.beings.push(new Being(random(50, width), random(50, height), 2));
+      this.beings.push(new Being(random(50, width), random(50, height), age));
     }
   }
   /*
@@ -99,11 +99,15 @@ class World {
     for (let being of this.beings) {
       being.exist();
 
-      if (this.beings.length > 2) {
-        // being.reproduce();
-        // this.kill_beings();
-        this.prevent_collisions();
-      }
+      // if (this.beings.length > 2) {
+      //   // being.reproduce();
+      //   // this.kill_beings();
+      //   this.prevent_collisions();
+      // }
+    }
+
+    if (this.beings.length > 2){
+      this.prevent_collisions(); 
     }
   }
   /*

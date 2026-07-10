@@ -2,6 +2,13 @@ class Being {
   constructor(x, y, age) {
     this.pos = createVector(x, y);
     this.age = age;
+
+    this.maxes = {
+      max_mass: constrain(Math.floor(randomGaussian(10, 6)), 5, 20),
+      max_mass_age: Math.floor(randomGaussian(18, 1)),
+      speed_mult: random(0.09, 0.4),
+    };
+
     this.mass = this.get_mass();
     this.energy = this.get_energy();
     this.speed = createVector(0, 0);
@@ -9,11 +16,6 @@ class Being {
     this.destination = this.pos.copy();
     this.schedule = this.get_schedule(this.age);
 
-    /*
-    working!!!!!!!!!`
-    */
-    //we store the maxes for each equation basically. 
-    this.genetics = 
   }
   /*
   beings age, exist & move.
@@ -53,7 +55,8 @@ class Being {
     let direction = p5.Vector.sub(this.destination, this.pos);
     direction.normalize();
 
-    let speed = (this.energy / this.mass) * Math.sqrt(d) * 0.5;
+    let speed =
+      (this.energy / this.mass) * Math.sqrt(d) * this.maxes.speed_mult;
 
     direction.mult(speed);
     this.pos.add(direction);
@@ -202,8 +205,8 @@ class Being {
   get_mass() {
     //mass is an asymptotic-exponential-growth graph.
 
-    const a = 20; //max.
-    const b = 18; //in how many steps is max achieved.
+    const a = this.maxes.max_mass; //max.
+    const b = this.maxes.max_mass_age; //in how many steps is max achieved.
 
     const mass = (a * (1 - Math.exp(-5 * (this.age / b)))) / (1 - Math.exp(-5));
 
