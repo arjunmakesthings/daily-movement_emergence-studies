@@ -1,5 +1,5 @@
 class Being {
-  constructor(x, y, age) {
+  constructor(x, y, age, db_col_r = 0) {
     this.pos = createVector(x, y);
     this.age = age;
 
@@ -17,7 +17,7 @@ class Being {
     this.schedule = this.get_schedule(this.age);
 
     //temp:
-    this.r = 0; 
+    this.r = db_col_r;
   }
   /*
   beings age, exist & move.
@@ -28,10 +28,15 @@ class Being {
     if (this.age > 1) {
       this.move();
     }
+    this.reproduce();
   }
   body() {
     // fill(0, map(this.age, 0, 60, 1, 255));
-    fill (this.r,0,0); 
+
+    if (this.age > 1){
+      this.r=0;
+    }
+    fill(this.r, 0, 0);
     circle(this.pos.x, this.pos.y, this.mass);
 
     if (debug_mode) {
@@ -84,36 +89,51 @@ class Being {
     }
   }
   /*
-  when more than 2 beings exist, and are in close proximity, they have a chance of reproducing.
+  when more than 2 beings exist, and are in close proximity with atleast one of them between 18 - 45, they have a chance of reproducing.
   */
-  reproduce() {
-    for (let being of world.beings) {
-      if (being === this) continue; //can't reproduce yourself.
-      if (this.age < 18 || being.curr_age < 18 || this.age > 45) continue;
+  // reproduce() {
+  //   if (this.age < 18 || this.age > 45) return;
 
-      const d = p5.Vector.dist(this.pos, being.pos);
-      const min_d = (this.mass + being.mass) / 2;
+  //   // const neighbours = this.get_neighbours();
 
-      let possible_times = this.schedule.map((slot) => slot[0]);
+  //   const neighbours = this.get_neighbours().filter(
+  //     (being) => being.age >= 18,
+  //   );
 
-      if (d < min_d) {
-        //probability is high (not 1) when between 18 - 30 and reduces afterwards and close to 0 after 40.
-        let p =
-          0.2 *
-          (1 / (1 + Math.exp(-(this.age - 18) / 2))) *
-          (1 / (1 + Math.exp((this.age - 40) / 2)));
+  //   //probability is high (not 1) when between 18 - 30 and reduces afterwards and close to 0 after 40.
 
-        if (Math.random() < p) {
-          world.beings.push(
-            new Being(
-              (this.pos.x + being.pos.x) / 2,
-              (this.pos.y + being.pos.y) / 2,
-              0,
-            ),
-          );
-          break;
-        }
-      }
+  //   for (let neighbour of neighbours){
+  //   let p =
+  //     0.2 *
+  //     (1 / (1 + Math.exp(-(this.age - 18) / 2))) *
+  //     (1 / (1 + Math.exp((this.age - 40) / 2)));
+
+  //   if (Math.random() < p) {
+  //     world.beings.push(
+  //       new Being(
+  //         (this.pos.x + neighbour.pos.x) / 2,
+  //         (this.pos.y + neighbour.pos.y) / 2,
+  //         0,
+  //         255
+  //       ),
+  //     );
+  //   }
+  // }
+  // }
+  reproduce(partner) {
+    if (!partner) return false;
+    if (this.age < 18 || this.age > 45) return false;
+    if (partner.age < 18 || partner.age > 45) return false;
+
+    const p =
+      0.2 *
+      (1 / (1 + Math.exp(-(this.age - 18) / 2))) *
+      (1 / (1 + Math.exp((this.age - 40) / 2)));
+
+    if (Math.random() >= p) {
+      return false;
+    } else {
+      return true;
     }
   }
   /*
@@ -236,7 +256,7 @@ class Being {
   /*
   for a being, get neighbours within a specific radius.
   */
-  get_neighbours(radius, beings = world.beings) {
+  get_neighbours(radius = maximum_mass * 2, beings = world.beings) {
     const r2 = radius * radius;
 
     return beings.filter((being) => {
