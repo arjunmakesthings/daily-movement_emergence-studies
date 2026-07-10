@@ -26,6 +26,18 @@ function draw() {
   world.run();
 
   if (debug_mode) debug();
+
+  for (let being of world.beings){
+    being.r = 0; 
+  }
+
+  //check neighbour getter. 
+  world.beings[0].r = 255; 
+  let neighbours = world.beings[0].get_neighbours(world.beings[0].mass*2); 
+
+  for (let neighbour of neighbours){
+    neighbour.r = 255; 
+  }
 }
 
 function debug(n = 0) {

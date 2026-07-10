@@ -16,6 +16,8 @@ class Being {
     this.destination = this.pos.copy();
     this.schedule = this.get_schedule(this.age);
 
+    //temp:
+    this.r = 0; 
   }
   /*
   beings age, exist & move.
@@ -28,7 +30,8 @@ class Being {
     }
   }
   body() {
-    fill(0, map(this.age, 0, 60, 1, 255));
+    // fill(0, map(this.age, 0, 60, 1, 255));
+    fill (this.r,0,0); 
     circle(this.pos.x, this.pos.y, this.mass);
 
     if (debug_mode) {
@@ -81,11 +84,9 @@ class Being {
     }
   }
   /*
-  when more than 2 beings exist, and are in close proximity, they can reproduce.
+  when more than 2 beings exist, and are in close proximity, they have a chance of reproducing.
   */
   reproduce() {
-    //beings in close proximity to each other give rise to another being.
-
     for (let being of world.beings) {
       if (being === this) continue; //can't reproduce yourself.
       if (this.age < 18 || being.curr_age < 18 || this.age > 45) continue;
@@ -231,5 +232,16 @@ class Being {
       m;
 
     return Math.round(energy * 1000) / 1000;
+  }
+  /*
+  for a being, get neighbours within a specific radius.
+  */
+  get_neighbours(radius, beings = world.beings) {
+    const r2 = radius * radius;
+
+    return beings.filter((being) => {
+      if (being === this) return false;
+      return p5.Vector.sub(being.pos, this.pos).magSq() <= r2;
+    });
   }
 }
