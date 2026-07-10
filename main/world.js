@@ -227,4 +227,7 @@ class World {
       }
     }
   }
+  show_debugs(){
+
+  }
 }

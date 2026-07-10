@@ -7,7 +7,7 @@ let world;
 //vars to change:
 let init_population = 300;
 let day_length = 10;
-let debug_mode = false;
+let debug_mode = true;
 
 const maximum_mass = 20;
 

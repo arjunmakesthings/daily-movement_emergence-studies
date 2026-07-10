@@ -1,8 +1,9 @@
 class Being {
-  constructor(x, y, age, db_col_r = 0) {
+  constructor(x, y, age) {
     this.pos = createVector(x, y);
     this.age = age;
 
+    //kind of like genetics, but not inherited (upto chance).
     this.maxes = {
       max_mass: constrain(Math.floor(randomGaussian(10, 6)), 5, maximum_mass),
       max_mass_age: Math.floor(randomGaussian(18, 1)),
@@ -15,9 +16,6 @@ class Being {
     this.destinations = [];
     this.destination = this.pos.copy();
     this.schedule = this.get_schedule(this.age);
-
-    //temp:
-    this.r = db_col_r;
   }
   /*
   beings age, exist & move.
@@ -30,12 +28,9 @@ class Being {
     }
   }
   body() {
-    // fill(0, map(this.age, 0, 60, 1, 255));
+    let col = map(this.age, 0, 80, 190, 0);
 
-    if (this.age > 1) {
-      this.r = 0;
-    }
-    fill(this.r, 0, 0);
+    fill(col);
     circle(this.pos.x, this.pos.y, this.mass);
 
     if (debug_mode) {
@@ -106,7 +101,6 @@ class Being {
       (this.pos.x + neighbour.pos.x) / 2,
       (this.pos.y + neighbour.pos.y) / 2,
       0,
-      255,
     );
   }
   /*
@@ -236,5 +230,8 @@ class Being {
       if (being === this) return false;
       return p5.Vector.sub(being.pos, this.pos).magSq() <= r2;
     });
+  }
+  show_debugs(){
+    
   }
 }
