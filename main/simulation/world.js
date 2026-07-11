@@ -2,9 +2,8 @@ class World {
   constructor(
     w,
     h,
-    _init_population,
-    _day_length,
-    _max_mass = 20,
+    _init_population = 4,
+    _day_length = 24,
     _debug_mode = false,
   ) {
     //inherited:
@@ -13,7 +12,7 @@ class World {
       h,
     };
     this.init_population = _init_population;
-    this.max_mass = _max_mass;
+    this.max_mass = 20;
     this.day_length = _day_length;
     this.debug_mode = _debug_mode;
 

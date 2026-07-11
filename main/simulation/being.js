@@ -43,7 +43,7 @@ class Being {
     //show heading:
     const dir = p5.Vector.sub(this.destination, this.pos);
     rotate(dir.heading());
-    line(0, 0, this.mass * 0.75, 0);
+    // line(0, 0, this.mass * 0.75, 0);
     pop();
 
     stroke(this.speed * 100);
@@ -64,12 +64,13 @@ class Being {
 
     let direction = p5.Vector.sub(this.destination, this.pos);
 
-    let speed = this.energy / this.mass;
+    let speed = (this.energy / this.mass);
 
     //don't overshoot:
     if (direction.mag() <= speed) {
       this.pos.set(this.destination);
     } else {
+      speed * this.speed_mult; 
       direction.normalize();
       direction.mult(speed);
       this.pos.add(direction);
