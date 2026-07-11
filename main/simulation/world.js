@@ -36,7 +36,7 @@ class World {
       this.bounds.w,
       this.bounds.h,
       hotspots_n,
-      (this.init_population / this.max_mass) * 4,
+      (this.init_population / this.max_mass) * 8,
     );
   }
 
@@ -90,52 +90,70 @@ class World {
   /*
   generate hotspots in the world so that there is atleast one hotspot for 4 people.
   */
-  get_hotspots(w, h, n, min_spacing) {
-    let posis = [];
-    let size = min_spacing;
+  // get_hotspots(w, h, n, min_spacing) {
+  //   let posis = [];
+  //   let size = min_spacing;
 
-    //check if co-centric circles min_spacing apart can fit onto the space:
-    const can_fit = Math.floor(Math.min(w, h) / min_spacing) >= n;
+  //   //check if co-centric circles min_spacing apart can fit onto the space:
+  //   const can_fit = Math.floor(Math.min(w, h) / min_spacing) >= n;
 
-    //based on that, do either of the two branches:
-    const origin = createVector(width / 2, height / 2);
-    if (can_fit) {
-      //randomly plot them on the circles (they will always be at-least min-spacing apart).
-      for (let i = 0; i < n; i++) {
-        let theta = random(TWO_PI);
-        let x = origin.x + (size / 2) * cos(theta);
-        let y = origin.y + (size / 2) * sin(theta);
-        posis.push([x, y]);
-        size += min_spacing;
-      }
-    } else {
-      //see how many can fit:
-      let circle_count = 0;
-      while (origin.x + size / 2 < w && origin.y + size / 2 < h) {
-        size += min_spacing;
-        circle_count++;
-      }
-      const spots_on_each = Math.ceil(n / circle_count);
+  //   //based on that, do either of the two branches:
+  //   const origin = createVector(width / 2, height / 2);
+  //   if (can_fit) {
+  //     //randomly plot them on the circles (they will always be at-least min-spacing apart).
+  //     for (let i = 0; i < n; i++) {
+  //       let theta = random(TWO_PI);
+  //       let x = origin.x + (size / 2) * cos(theta);
+  //       let y = origin.y + (size / 2) * sin(theta);
+  //       posis.push([x, y]);
+  //       size += min_spacing;
+  //     }
+  //   } else {
+  //     //see how many can fit:
+  //     let circle_count = 0;
+  //     while (origin.x + size / 2 < w && origin.y + size / 2 < h) {
+  //       size += min_spacing;
+  //       circle_count++;
+  //     }
+  //     const spots_on_each = Math.ceil(n / circle_count);
 
-      //reset size:
-      size = min_spacing;
+  //     //reset size:
+  //     size = min_spacing;
 
-      let drawn = 0;
+  //     let drawn = 0;
 
-      for (let i = 0; i < circle_count; i++) {
-        let start_theta = random(TWO_PI);
-        let inc = TWO_PI / circle_count;
-        let theta = start_theta;
+  //     for (let i = 0; i < circle_count; i++) {
+  //       let start_theta = random(TWO_PI);
+  //       let inc = TWO_PI / circle_count;
+  //       let theta = start_theta;
 
-        for (let j = 0; j < spots_on_each && drawn < n; j++) {
-          let x = origin.x + (size / 2) * cos(theta);
-          let y = origin.y + (size / 2) * sin(theta);
-          posis.push([x, y]);
-          theta += inc;
-          drawn++;
-        }
-        size += min_spacing;
-      }
+  //       for (let j = 0; j < spots_on_each && drawn < n; j++) {
+  //         let x = origin.x + (size / 2) * cos(theta);
+  //         let y = origin.y + (size / 2) * sin(theta);
+  //         posis.push([x, y]);
+  //         theta += inc;
+  //         drawn++;
+  //       }
+  //       size += min_spacing;
+  //     }
+  //   }
+  //   return posis;
+  // }
+
+  /*
+  chatgpt generated better distribution.
+  */
+  get_hotspots(w, h, n) {
+    const posis = [];
+    const origin = createVector(w / 2, h / 2);
+    const maxRadius = Math.min(w, h) * 0.45;
+    const goldenAngle = PI * (3 - sqrt(5));
+
+    for (let i = 0; i < n; i++) {
+      const r = maxRadius * sqrt((i + 0.5) / n);
+      const theta = i * goldenAngle;
+
+      posis.push([origin.x + r * cos(theta), origin.y + r * sin(theta)]);
     }
 
     return posis;

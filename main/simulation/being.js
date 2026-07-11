@@ -8,7 +8,7 @@ class Being {
     this.maxes = {
       max_mass: constrain(Math.floor(randomGaussian(10, 6)), 5, world.max_mass),
       max_mass_age: Math.floor(randomGaussian(18, 1)),
-      speed_mult: random(0.05, 0.2),
+      speed_mult: random(0.2, 0.8),
     };
 
     this.mass = this.get_mass();
@@ -47,6 +47,9 @@ class Being {
     // Draw a line pointing forward
     line(0, 0, this.mass * 0.75, 0);
     pop();
+
+    stroke (this.speed * 100)
+    line (this.pos.x, this.pos.y, this.destination.x, this.destination.y); 
   }
   move() {
     let d = dist(
