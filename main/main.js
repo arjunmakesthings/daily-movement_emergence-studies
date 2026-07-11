@@ -13,10 +13,7 @@ const maximum_mass = 20;
 
 function setup() {
   // createCanvas(windowWidth, windowHeight);
-  createCanvas(800, 800);
-
-  //p5 stuff; globally; once:
-  noStroke();
+  createCanvas(800, 800); 
 
   world = new World();
   world.initialize(init_population);

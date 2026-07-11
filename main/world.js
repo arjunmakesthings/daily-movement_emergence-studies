@@ -3,6 +3,9 @@ class World {
     this.time = 0;
     this.beings = [];
 
+    //p5 stuff; globally; once:
+    noStroke();
+
     this.killing_time = 0;
     // this.hotspots = this.get_hotspots(width, height, 100, 100);
     const hn = constrain(Math.floor(init_population / 4), 2, init_population);
@@ -134,7 +137,10 @@ class World {
       this.killing_time = Math.floor(Math.random() * day_length);
     }
 
-    if (this.time == this.killing_time && this.beings.length > 0.95 * init_population) {
+    if (
+      this.time == this.killing_time &&
+      this.beings.length > 0.95 * init_population
+    ) {
       for (let i = this.beings.length - 1; i >= 0; i--) {
         const age = this.beings[i].age;
         const age_f = constrain(age / 100, 0, 1);
@@ -227,7 +233,5 @@ class World {
       }
     }
   }
-  show_debugs(){
-
-  }
+  show_debugs() {}
 }
