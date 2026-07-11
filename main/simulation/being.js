@@ -40,41 +40,40 @@ class Being {
     stroke(col);
     circle(0, 0, this.mass);
 
-    // Direction towards destination
+    //show heading:
     const dir = p5.Vector.sub(this.destination, this.pos);
     rotate(dir.heading());
-
-    // Draw a line pointing forward
     line(0, 0, this.mass * 0.75, 0);
     pop();
 
-    stroke (this.speed * 100)
-    line (this.pos.x, this.pos.y, this.destination.x, this.destination.y); 
+    stroke(this.speed * 100);
+    line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
   }
   move() {
-    let d = dist(
-      this.pos.x,
-      this.pos.y,
-      this.destination.x,
-      this.destination.y,
-    );
+    //move according to a schedule:
+    let d = p5.Vector.dist(this.pos, this.destination);
 
-    //move according to a schedule.
-    for (let i = 0; i < this.schedule.length; i++) {
-      if (world.time == this.schedule[i][0] && d < this.mass) {
-        this.destination.set(this.destinations[i]);
+    if (d < this.mass) {
+      for (let i = 0; i < this.schedule.length; i++) {
+        if (world.time == this.schedule[i][0]) {
+          this.destination.set(this.destinations[i]);
+          break;
+        }
       }
     }
 
     let direction = p5.Vector.sub(this.destination, this.pos);
-    direction.normalize();
 
-    let speed =
-      // (this.energy / this.mass) * Math.sqrt(d) * this.maxes.speed_mult;
-      this.energy / this.mass;
+    let speed = this.energy / this.mass;
 
-    direction.mult(speed);
-    this.pos.add(direction);
+    //don't overshoot:
+    if (direction.mag() <= speed) {
+      this.pos.set(this.destination);
+    } else {
+      direction.normalize();
+      direction.mult(speed);
+      this.pos.add(direction);
+    }
 
     this.constrain();
   }
