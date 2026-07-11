@@ -7,16 +7,17 @@ let world;
 //vars to change:
 let init_population = 300;
 let day_length = 10;
-let debug_mode = true;
+let debug_mode = false;
 
 const maximum_mass = 20;
 
 function setup() {
   // createCanvas(windowWidth, windowHeight);
-  createCanvas(800, 800); 
+  createCanvas(800, 800);
 
-  world = new World();
-  world.initialize(init_population);
+  // world = new World();
+  world = new World(width, height, 300, 10, 20, false);
+  world.initialize();
 }
 
 function draw() {

@@ -5,7 +5,7 @@ class Being {
 
     //kind of like genetics, but not inherited (upto chance).
     this.maxes = {
-      max_mass: constrain(Math.floor(randomGaussian(10, 6)), 5, maximum_mass),
+      max_mass: constrain(Math.floor(randomGaussian(10, 6)), 5, world.max_mass),
       max_mass_age: Math.floor(randomGaussian(18, 1)),
       speed_mult: random(0.05, 0.2),
     };
@@ -33,11 +33,11 @@ class Being {
     fill(col);
     circle(this.pos.x, this.pos.y, this.mass);
 
-    if (debug_mode) {
-      stroke(0);
-      strokeWeight(1);
-      line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
-    }
+    // if (debug_mode) {
+    //   stroke(0);
+    //   strokeWeight(1);
+    //   line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
+    // }
   }
   move() {
     let d = dist(
@@ -113,7 +113,7 @@ class Being {
   for given age, get a schedule based on the busyness (the older you are, the more busy you get).
   */
   get_schedule(age) {
-    let avl_time = Array.from({ length: day_length }, (_, i) => i);
+    let avl_time = Array.from({ length: world.day_length }, (_, i) => i);
     let schedule = [];
 
     //calculate available time slots based on age.
@@ -166,7 +166,7 @@ class Being {
   get_curr_age() {
     //beings age by 1 unit a day.
     // if (world.time == 0 && frameCount % 60 == 0) {
-    if (frameCount % (60 * day_length) === 0) {
+    if (frameCount % (60 * world.day_length) === 0) {
       this.age += 1;
 
       //as age increases, energy decreases; while mass increases.
@@ -223,15 +223,12 @@ class Being {
   /*
   for a being, return an array of neighbours within a specific radius.
   */
-  get_neighbours(radius = maximum_mass * 2, beings = world.beings) {
+  get_neighbours(radius = world.max_mass * 2, beings = world.beings) {
     const r2 = radius * radius;
 
     return beings.filter((being) => {
       if (being === this) return false;
       return p5.Vector.sub(being.pos, this.pos).magSq() <= r2;
     });
-  }
-  show_debugs(){
-    
   }
 }

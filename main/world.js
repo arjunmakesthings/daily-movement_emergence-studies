@@ -1,31 +1,92 @@
 class World {
-  constructor() {
+  constructor(
+    w,
+    h,
+    _init_population,
+    _day_length,
+    _max_mass = 20,
+    _debug_mode = false,
+  ) {
+    //inherited:
+    this.bounds = {
+      w,
+      h,
+    };
+    this.init_population = _init_population;
+    this.max_mass = _max_mass;
+    this.day_length = _day_length;
+    this.debug_mode = _debug_mode;
+
+    //declared:
     this.time = 0;
     this.beings = [];
 
     //p5 stuff; globally; once:
     noStroke();
+    // noFill();
 
     this.killing_time = 0;
-    // this.hotspots = this.get_hotspots(width, height, 100, 100);
-    const hn = constrain(Math.floor(init_population / 4), 2, init_population);
+
+    const hotspots_n = constrain(
+      Math.floor(this.init_population / 4),
+      2,
+      this.init_population,
+    );
     this.hotspots = this.get_hotspots(
-      width,
-      height,
-      hn,
-      (init_population / maximum_mass) * 4,
+      this.bounds.w,
+      this.bounds.h,
+      hotspots_n,
+      (this.init_population / this.max_mass) * 4,
     );
   }
 
   /*
-  initalize the world, with an init population n (declared globally in main.js) with scattered ages.
+  initalize the world, with an init population n with distributed ages.
   */
-  initialize(n) {
-    for (let i = 0; i < n; i++) {
+  initialize() {
+    for (let i = 0; i < this.init_population; i++) {
       let age = Math.round(constrain(randomGaussian(18, 20), 18, 60));
-      this.beings.push(new Being(random(50, width), random(50, height), age));
+      const margin = {
+        x: Math.floor(this.bounds.w * 0.05),
+        y: Math.floor(this.bounds.h * 0.05),
+      };
+
+      this.beings.push(
+        new Being(
+          random(margin.x, this.bounds.w - margin.x),
+          random(margin.y, this.bounds.h - margin.y),
+          age,
+        ),
+      );
     }
   }
+  /*
+  the world runs with time & beings.
+  */
+  run() {
+    background(255); //temp. remove when adding interpretations.
+
+    this.keep_time();
+
+    for (let being of this.beings) {
+      being.exist();
+    }
+
+    if (this.beings.length > 2) {
+      this.prevent_collisions();
+      this.kill_and_make_beings();
+    }
+
+    if (this.debug_mode) {
+      this.show_debugs();
+    }
+  }
+  /*
+  ----------------------------------------
+  helpers / getters:
+  ----------------------------------------
+  */
+
   /*
   generate hotspots in the world so that there is atleast one hotspot for 4 people.
   */
@@ -96,37 +157,15 @@ class World {
         size += min_spacing;
       }
     }
+
     return posis;
   }
-
-  /*
-  the world runs with time & beings.
-  */
-  run() {
-    background(255); //temp. remove when adding interpretations.
-
-    this.keep_time();
-
-    for (let being of this.beings) {
-      being.exist();
-    }
-
-    if (this.beings.length > 2) {
-      this.prevent_collisions();
-      this.kill_and_make_beings();
-    }
-  }
-  /*
-  ----------------------------------------
-  helpers:
-  ----------------------------------------
-  */
 
   /*
   keep time as a x-second loop; x specified in main.js. 
   */
   keep_time() {
-    this.time = Math.floor((frameCount / 60) % day_length);
+    this.time = Math.floor((frameCount / 60) % this.day_length);
   }
   /*
   kill beings, when beings >2.
@@ -134,12 +173,12 @@ class World {
   kill_and_make_beings() {
     //as beings age, their probability to die increases. therefore, it is almost imminent if they are 100.
     if (this.time === 0) {
-      this.killing_time = Math.floor(Math.random() * day_length);
+      this.killing_time = Math.floor(Math.random() * this.day_length);
     }
 
     if (
       this.time == this.killing_time &&
-      this.beings.length > 0.95 * init_population
+      this.beings.length > 0.95 * this.init_population
     ) {
       for (let i = this.beings.length - 1; i >= 0; i--) {
         const age = this.beings[i].age;
@@ -151,13 +190,16 @@ class World {
           this.beings.splice(i, 1);
         }
       }
-    } else if (this.beings.length < init_population) {
+    } else if (this.beings.length < this.init_population) {
       const valid_beings = this.beings.filter(
         (being) => being.age >= 18 && being.age <= 45,
       );
 
       let i = 0;
-      while (this.beings.length < init_population && i < valid_beings.length) {
+      while (
+        this.beings.length < this.init_population &&
+        i < valid_beings.length
+      ) {
         const newborn = valid_beings[i].reproduce();
         if (newborn) this.beings.push(newborn);
         i++;
@@ -166,7 +208,7 @@ class World {
   }
 
   prevent_collisions() {
-    const cellSize = maximum_mass * 3;
+    const cellSize = this.maximum_mass * 3;
     const passes = 2;
     const slop = 0.5; // ignore tiny overlaps that cause jitter.
 
@@ -233,5 +275,13 @@ class World {
       }
     }
   }
-  show_debugs() {}
+  show_debugs() {
+    push();
+    for (let i = 0; i < this.hotspots.length; i++) {
+      strokeWeight(5);
+      stroke(255, 0, 0);
+      point(this.hotspots[i][0], this.hotspots[i][1]);
+    }
+    pop();
+  }
 }
