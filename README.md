@@ -18,4 +18,21 @@ what is, however, shown to a person is <strong>not</strong> this autonomous syst
 ---
 
 ### technical notes: 
-a world is instantiated 
+this system is built using [p5.js](https://p5js.org/), a javascript library for programmatic-art. 
+
+the simulation lives in `./main/simulation`, and interpretations live in `./main/interpretations`.
+
+an interpretation can be written by doing the following: 
+
+- instantiate a world:
+    * `world = new World(w, h, [n, d, db]);` with the following parameters: 
+        * w: (int) width of the world. 
+        * h: (int) height of the world.
+        * n: (int) initial population (default: 4).
+        * d: (int) day-length (default: 24).
+        * db: (bool) debug-mode (default: false).
+
+- initialize the world with `world.initialize()`. 
+
+- run the world with `world.run()`. 
+
