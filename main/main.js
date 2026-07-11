@@ -53,11 +53,4 @@ function debug(n = 0) {
       tracked.destination.y +
       "\n",
   );
-
-  for (let i = 0; i < world.hotspots.length; i++) {
-    strokeWeight(5);
-    stroke(255, 0, 0);
-
-    point(world.hotspots[i][0], world.hotspots[i][1]);
-  }
 }

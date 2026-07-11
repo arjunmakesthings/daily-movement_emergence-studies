@@ -1,7 +1,8 @@
 class Being {
-  constructor(x, y, age) {
-    this.pos = createVector(x, y);
-    this.age = age;
+  constructor(_x, _y, _age) {
+    //inherited:
+    this.pos = createVector(_x, _y);
+    this.age = _age;
 
     //kind of like genetics, but not inherited (upto chance).
     this.maxes = {
@@ -21,23 +22,31 @@ class Being {
   beings age, exist & move.
   */
   exist() {
-    this.body();
+    if (world.debug_mode) {
+      this.show();
+    }
     this.get_curr_age();
     if (this.age > 1) {
       this.move();
     }
   }
-  body() {
+  show() {
+    push();
+    noFill();
     let col = map(this.age, 0, 80, 190, 0);
 
-    fill(col);
-    circle(this.pos.x, this.pos.y, this.mass);
+    translate(this.pos.x, this.pos.y);
 
-    // if (debug_mode) {
-    //   stroke(0);
-    //   strokeWeight(1);
-    //   line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
-    // }
+    stroke(col);
+    circle(0, 0, this.mass);
+
+    // Direction towards destination
+    const dir = p5.Vector.sub(this.destination, this.pos);
+    rotate(dir.heading());
+
+    // Draw a line pointing forward
+    line(0, 0, this.mass * 0.75, 0);
+    pop();
   }
   move() {
     let d = dist(
@@ -58,7 +67,8 @@ class Being {
     direction.normalize();
 
     let speed =
-      (this.energy / this.mass) * Math.sqrt(d) * this.maxes.speed_mult;
+      // (this.energy / this.mass) * Math.sqrt(d) * this.maxes.speed_mult;
+      this.energy / this.mass;
 
     direction.mult(speed);
     this.pos.add(direction);

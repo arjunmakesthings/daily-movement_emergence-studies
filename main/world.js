@@ -105,15 +105,6 @@ class World {
         let theta = random(TWO_PI);
         let x = origin.x + (size / 2) * cos(theta);
         let y = origin.y + (size / 2) * sin(theta);
-        /* to see:
-          // noFill();
-          // stroke(0);
-          // strokeWeight(0.5);
-          // // circle(origin.x, origin.y, size);
-          // strokeWeight(10);
-          // stroke(255, 0, 0);
-          // point(x, y);
-        */
         posis.push([x, y]);
         size += min_spacing;
       }
@@ -121,12 +112,6 @@ class World {
       //see how many can fit:
       let circle_count = 0;
       while (origin.x + size / 2 < w && origin.y + size / 2 < h) {
-        /*to see:
-          noFill();
-          stroke(0);
-          strokeWeight(0.5);
-          circle(origin.x, origin.y, size);
-        */
         size += min_spacing;
         circle_count++;
       }
@@ -145,11 +130,6 @@ class World {
         for (let j = 0; j < spots_on_each && drawn < n; j++) {
           let x = origin.x + (size / 2) * cos(theta);
           let y = origin.y + (size / 2) * sin(theta);
-          /*to see:
-            stroke(255, 0, 0);
-            strokeWeight(10);
-            point(x, y);
-          */
           posis.push([x, y]);
           theta += inc;
           drawn++;
@@ -283,5 +263,32 @@ class World {
       point(this.hotspots[i][0], this.hotspots[i][1]);
     }
     pop();
+
+    //show visually:
+    textSize(12);
+    noStroke();
+    fill(255, 0, 0);
+
+    let tracked = this.beings[0];
+    textAlign(CENTER);
+    text(
+      "[" + 0 + "]",
+      tracked.pos.x + tracked.mass * 1.5,
+      tracked.pos.y + tracked.mass / 2,
+    );
+
+    console.log(
+      "beings[" + 0 + "]" + "\n",
+      "time: " + this.time + "\n",
+      "age: " + tracked.age + "\n",
+      "mass: " + tracked.mass + "\n",
+      "energy: " + tracked.energy + "\n",
+      "schedule: " + tracked.schedule + "\n",
+      "destinations: " +
+        tracked.destination.x +
+        ", " +
+        tracked.destination.y +
+        "\n",
+    );
   }
 }
