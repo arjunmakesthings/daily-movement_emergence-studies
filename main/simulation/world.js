@@ -188,7 +188,7 @@ class World {
   }
 
   prevent_collisions() {
-    const cellSize = this.maximum_mass * 3;
+    const cellSize = this.max_mass * 3;
     const passes = 2;
     const slop = 0.5; // ignore tiny overlaps that cause jitter.
 
