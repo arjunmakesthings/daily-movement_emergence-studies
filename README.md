@@ -36,3 +36,12 @@ an interpretation can be written by doing the following:
 
 - run the world with `world.run()`. 
 
+- `world.beings` gives you a list of all beings in that world, with the following properties: 
+    - `.age` => int
+    - `.pos` => p5.Vector
+    - `mass` => float
+    - `energy` => float
+
+- beings are also capable of getting their neighbours with `.get_neighbours` => array of beings.
+
+---
