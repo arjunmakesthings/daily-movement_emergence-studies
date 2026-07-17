@@ -9,7 +9,10 @@ let c_shader;
 let pairs = [];
 
 function preload() {
-  c_shader = loadShader("../../", "./frag.frag");
+  c_shader = loadShader(
+    "/main/interpretations/260715_born-love/vert.vert",
+    "/main/interpretations/260715_born-love/frag.frag",
+  );
 }
 
 function setup() {
@@ -29,5 +32,5 @@ function draw() {
 
   shader(c_shader);
 
-  rect(-width / 2, -height / 2, width, height);
+    rect(0, 0, width, height);
 }
