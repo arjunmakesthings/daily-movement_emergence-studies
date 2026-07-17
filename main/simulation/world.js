@@ -63,7 +63,9 @@ class World {
   the world runs with time & beings.
   */
   run() {
+    if (this.debug_mode){
     background(255); //temp. remove when adding interpretations.
+  }
 
     this.keep_time();
 
