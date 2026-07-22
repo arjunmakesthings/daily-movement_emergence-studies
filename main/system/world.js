@@ -4,6 +4,7 @@ class World {
     h,
     _init_population = 4,
     _day_length = 24,
+    _max_mass = 20,
     _debug_mode = false,
   ) {
     //inherited:
@@ -12,7 +13,7 @@ class World {
       h,
     };
     this.init_population = _init_population;
-    this.max_mass = 20;
+    this.max_mass = _max_mass;
     this.day_length = _day_length;
     this.debug_mode = _debug_mode;
 
@@ -63,9 +64,9 @@ class World {
   the world runs with time & beings.
   */
   run() {
-    if (this.debug_mode){
-    background(255); //temp. remove when adding interpretations.
-  }
+    if (this.debug_mode) {
+      background(255); //temp. remove when adding interpretations.
+    }
 
     this.keep_time();
 
