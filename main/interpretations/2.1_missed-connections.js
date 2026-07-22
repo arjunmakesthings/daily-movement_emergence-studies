@@ -5,7 +5,7 @@ thought:
 we walk by so many people. when they are within a certain distance, we have a short window of time to connect with each other in physical-space, until we are distant again. 
 
 expression: 
-draw a line from each being to other beings around them within a specific radius, with the distance between them signifying the intensity of a possible connection.
+draw a line from each being to other beings that are around them within a specific radius, with the distance between them signifying the intensity of a possible connection, over time.
 
 parameters: 
 population: 1000,
