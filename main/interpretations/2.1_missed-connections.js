@@ -5,7 +5,7 @@ thought:
 we walk by so many people. when they are within a certain distance, we have a short window of time to connect with each other in physical-space, until we are distant again. 
 
 expression: 
-draw a line from each being to other beings around them within a specific radius, with the distance between them signifying the intensity of a possible connection.
+draw a line from each being to other beings around them within a specific radius, with the distance between them signifying the intensity of a possible connection, over time. connections are wiped out, however, by the movement of beings.
 
 parameters: 
 population: 1000,
@@ -19,19 +19,19 @@ let world;
 function setup() {
   createCanvas(1000, 1000);
   //accepts the following: (width, height, [population, day_length, max_mass, debug_mode ])
-  world = new World(width, height, 1000, 10, 4);
+  world = new World(width, height, 300, 10, 2);
   world.initialize();
 
-  background(255);
+  background(0);
 }
 
 function draw() {
-  background(255);
+  // background(255);
 
   world.run();
 
   for (let being of world.beings) {
-    let neighbours = being.get_neighbours(being.mass * 2);
+    let neighbours = being.get_neighbours(being.mass * 4);
 
     for (neighbour of neighbours) {
       let d = being.pos.dist(neighbour.pos);
@@ -39,8 +39,8 @@ function draw() {
       let sw = map(
         d,
         being.mass / 2 + neighbour.mass / 2,
-        being.mass * 2,
-        1,
+        being.mass * 4,
+        2,
         0.1,
       );
       render(being.pos, neighbour.pos, sw);
@@ -49,14 +49,11 @@ function draw() {
 }
 
 function render(being_pos, other_pos, sw) {
-  // strokeWeight(sw*2);
-  // stroke(0);
-  // point(being_pos.x, being_pos.y);
-  // point(other_pos.x, other_pos.y);
-
-  strokeWeight(sw);
-  // stroke(0, 10);
   stroke(0);
+  strokeWeight(sw * 2);
+  point(being_pos.x, being_pos.y);
 
+  stroke(255, 10);
+  strokeWeight(sw);
   line(being_pos.x, being_pos.y, other_pos.x, other_pos.y);
 }

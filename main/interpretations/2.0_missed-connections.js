@@ -31,7 +31,7 @@ function draw() {
   world.run();
 
   for (let being of world.beings) {
-    let neighbours = being.get_neighbours(being.mass * 2);
+    let neighbours = being.get_neighbours(being.mass * 3);
 
     for (neighbour of neighbours) {
       let d = being.pos.dist(neighbour.pos);
@@ -39,7 +39,7 @@ function draw() {
       let sw = map(
         d,
         being.mass / 2 + neighbour.mass / 2,
-        being.mass * 2,
+        being.mass * 3,
         1,
         0.1,
       );
