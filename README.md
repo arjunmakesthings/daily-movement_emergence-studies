@@ -1,5 +1,5 @@
 ### what:
-inspired by [process-compendium](https://github.com/REAS/studio/blob/master/ProcessCompendium.md) made by casey reas, this is a software-project written to explore emergence. however, unlike other enquiries pursuing emergence in complex systems (such as [conway's game of life](https://en.wikipedia.org/wiki/Conway's_Game_of_Life)), the rules here are inspired by the motions (and physical constraints) of everyday life in new-york.
+inspired by [process-compendium](https://github.com/REAS/studio/blob/master/ProcessCompendium.md) made by casey reas, this is a software-project written to explore emergence. however, unlike other enquiries pursuing emergence in complex systems (such as [conway's game of life](https://en.wikipedia.org/wiki/Conway's_Game_of_Life)), the rules here are inspired by the motions (and physical constraints) of everyday life.
 
 this is *not* a representative system, but merely inspired by a tiny part of the multitude i / we live in.
 
@@ -11,7 +11,7 @@ there is a <mark>world</mark>. the world is a container, and consists of many <m
 
 the world contains a <mark>population</mark> of <mark>beings</mark> — who are born, sustained, and killed over <mark>time</mark> by the world.
 
-the beings express life through <mark>movement</mark>, and movement is governed by a <mark>schedule</mark>. both the schedule & movement are governed by age (for eg: the closer you are to your 20s, the more likely you are to have a busier schedule (and thereby move more)). 
+the beings express life through <mark>movement</mark>, and movement is governed by a <mark>schedule</mark>. both the schedule & movement are governed by age (for eg: the closer you are to your 20s, the more likely you are to have a busier schedule (and thereby have to move more)). 
 
 what is, however, shown to a person is <strong>not</strong> a representation of the system, but <mark>software-interpretations</mark> of it — the artist (myself) decides what to show from the simulation. 
 
