@@ -1,5 +1,5 @@
 /*
-interpretation #2: missed connections.
+interpretation #2.0: missed connections.
 
 thought: 
 we walk by so many people. when they are within a certain distance, we have a short window of time to connect with each other in physical-space, until we are distant again. 
