@@ -26,12 +26,10 @@ let pairs = [];
 
 let diagonal = 0;
 
-let col_sw = false;
-
 function setup() {
   createCanvas(1000, 1000);
   //accepts the following: (width, height, [population, day_length, debug_mode])
-  world = new World(width, height, 1000, 5);
+  world = new World(width, height, 2000, 5);
   world.initialize();
 
   //sort beings by age:
@@ -41,9 +39,17 @@ function setup() {
     pairs.push([sorted[i], sorted[i + 1]]);
   }
 
+  for (let i = 0; i < pairs.length; i++) {
+    pairs[i].push(i);
+  }
+
+  colorMode(HSL, pairs.length, 100, 100);
+
   diagonal = Math.hypot(height, width);
 
-  background(255);
+  background(pairs.length, 100, 100);
+
+  noFill();
 }
 
 //helper to sort:
@@ -95,42 +101,40 @@ function getProximitySortedBeings(beings) {
   return result;
 }
 
-
-
 function draw() {
   world.run();
 
   // background (255);
 
-  // if (frameCount % (60 * world.day_length) == 0) {
-  for (let i = 0; i < pairs.length; i++) {
-    const first = pairs[i][0];
-    const next = pairs[i][1];
+  if (frameCount % (60 * world.day_length) == 0) {
+    for (let i = 0; i < pairs.length; i++) {
+      const first = pairs[i][0];
+      const next = pairs[i][1];
 
-    //get what you care about:
-    const d = first.pos.dist(next.pos);
-    const avg_age = (first.age + next.age) / 2;
-    const sum_of_masses = first.mass / 2 + next.mass / 2;
+      //get what you care about:
+      const d = first.pos.dist(next.pos);
+      const avg_age = (first.age + next.age) / 2;
+      const sum_of_masses = first.mass / 2 + next.mass / 2;
 
-    //the closer you are, the stronger the connection.
-    const a = map(d, sum_of_masses, diagonal - sum_of_masses, 100, 1);
+      //the closer you are, the stronger the connection.
+      const a = map(d, sum_of_masses, diagonal - sum_of_masses, 100, 1);
 
-    //the younger you are, the more your chances of being together:
-    // const sw = map(d, sum_of_masses, diagonal - sum_of_masses, 5, 0.1);
+      //the younger you are, the more your chances of being together:
+      // const sw = map(d, sum_of_masses, diagonal - sum_of_masses, 5, 0.1);
 
-    const sw = map(d, sum_of_masses, diagonal - sum_of_masses, 1, 0.1);
+      const sw = map(avg_age, sum_of_masses, diagonal - sum_of_masses, 1, 0.1);
 
-    draw_line(first.pos, next.pos, sw, a, col_sw);
-    col_sw=!col_sw; 
+      draw_line(first.pos, next.pos, sw, a, i);
+    }
   }
-  // }
 
   // noLoop();
 }
 
-
-function draw_line(start, end, w = 1, a = 100, swt) {
-  (swt) ? stroke(0,a) :stroke (255,a); 
+function draw_line(start, end, w = 1, a = 100, c) {
+  const col = color(c, a, 50);
+  col.setAlpha(0.1); 
+  stroke(col);
   strokeWeight(w);
   line(start.x, start.y, end.x, end.y);
 }
