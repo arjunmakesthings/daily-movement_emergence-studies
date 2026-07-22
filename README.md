@@ -8,7 +8,7 @@ this is *not* a representative system, but merely inspired by a tiny part of the
 ### system:
 
 there is a <mark>world</mark>. the world is a container, and consists of many <mark>places</mark>.
-
+{}
 the world contains a <mark>population</mark> of <mark>beings</mark> — who are born, sustained, and killed over <mark>time</mark> by the world.
 
 the beings express life through <mark>movement</mark>, and movement is governed by a <mark>schedule</mark>.
@@ -29,7 +29,7 @@ an interpretation can be written by doing the following:
         * w: (int) width of the world. 
         * h: (int) height of the world.
         * n: (int) initial population (default: 4).
-        * d: (int) day-length (default: 24).
+        * d: (int) day-length (default: 24) -> can be accessed via `world.day_length`. 
         * db: (bool) debug-mode (default: false).
 
 - initialize the world with `world.initialize()`. 

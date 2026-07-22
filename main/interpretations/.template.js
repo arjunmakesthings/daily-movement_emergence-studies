@@ -1,7 +1,16 @@
 /*
-what the interpretation is: 
+interpretation #
 
-yymmdd.
+thought: 
+//
+
+expression: 
+//
+
+parameters: 
+//
+
+xxth month, year.
 */
 
 let world;

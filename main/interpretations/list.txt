@@ -1,0 +1,1 @@
+- min distance threshold — i walk by you, we could be connected, but we aren't.
