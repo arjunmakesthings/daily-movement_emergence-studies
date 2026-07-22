@@ -1,35 +1,49 @@
 /*
-260721.
-pair interpolation shader.
+interpretation: 
+
+thought: 
+beings are destined to be with someone that they were born close (both in proximity & age) to. however, that may not be the case, and they may be separated in physical space.
+
+expression:
+at the end of every day, draw a link between a being and their partner. 
+
+parameters: 
+population = 1000; 
+day length = 10;
+
+# 260721.
 */
 
 let world;
+
+/*
+we make pairs at birth. when beings die, 
+
+pairs = [[being 1, being 2]]. 
+*/
+
 let pairs = [];
-let pairShader;
 
-const POPULATION = 2000;
-const NUM_PAIRS = POPULATION / 2;
+let diagonal = 0;
 
-function preload() {
-  pairShader = loadShader(
-    "/main/interpretations/260715_born-love/vert.vert",
-    "/main/interpretations/260715_born-love/frag.frag",
-  );
-}
+let col_sw = false;
 
 function setup() {
-  createCanvas(1000, 1000, WEBGL);
-
-  world = new World(width, height, POPULATION, 3);
+  createCanvas(1000, 1000);
+  //accepts the following: (width, height, [population, day_length, debug_mode])
+  world = new World(width, height, 1000, 5);
   world.initialize();
 
+  //sort beings by age:
   const sorted = getProximitySortedBeings(world.beings);
 
   for (let i = 0; i < sorted.length - 1; i += 2) {
     pairs.push([sorted[i], sorted[i + 1]]);
   }
 
-  noStroke();
+  diagonal = Math.hypot(height, width);
+
+  background(255);
 }
 
 //helper to sort:
@@ -81,36 +95,42 @@ function getProximitySortedBeings(beings) {
   return result;
 }
 
+
+
 function draw() {
   world.run();
 
-  shader(pairShader);
+  // background (255);
 
-  pairShader.setUniform("u_resolution", [width, height]);
+  // if (frameCount % (60 * world.day_length) == 0) {
+  for (let i = 0; i < pairs.length; i++) {
+    const first = pairs[i][0];
+    const next = pairs[i][1];
 
-  //flatten vec2 arrays
-  let starts = [];
-  let ends = [];
-  let masses = [];
+    //get what you care about:
+    const d = first.pos.dist(next.pos);
+    const avg_age = (first.age + next.age) / 2;
+    const sum_of_masses = first.mass / 2 + next.mass / 2;
 
-  for (let i = 0; i < NUM_PAIRS; i++) {
-    let first = pairs[i][0];
-    let second = pairs[i][1];
+    //the closer you are, the stronger the connection.
+    const a = map(d, sum_of_masses, diagonal - sum_of_masses, 100, 1);
 
-    starts.push(first.pos.x, first.pos.y);
+    //the younger you are, the more your chances of being together:
+    // const sw = map(d, sum_of_masses, diagonal - sum_of_masses, 5, 0.1);
 
-    ends.push(second.pos.x, second.pos.y);
+    const sw = map(d, sum_of_masses, diagonal - sum_of_masses, 1, 0.1);
 
-    masses.push(first.mass / 2 + second.mass / 2);
+    draw_line(first.pos, next.pos, sw, a, col_sw);
+    col_sw=!col_sw; 
   }
+  // }
 
-  pairShader.setUniform("u_start", starts);
+  // noLoop();
+}
 
-  pairShader.setUniform("u_end", ends);
 
-  pairShader.setUniform("u_mass", masses);
-
-  pairShader.setUniform("u_numPairs", NUM_PAIRS);
-
-  rect(-width / 2, -height / 2, width, height);
+function draw_line(start, end, w = 1, a = 100, swt) {
+  (swt) ? stroke(0,a) :stroke (255,a); 
+  strokeWeight(w);
+  line(start.x, start.y, end.x, end.y);
 }
