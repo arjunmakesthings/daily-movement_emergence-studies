@@ -21,22 +21,28 @@ let sorted = [];
 function setup() {
   createCanvas(1000, 1000);
   //accepts the following: (width, height, [population, day_length, debug_mode])
-  world = new World(width, height, 300, 10);
+  world = new World(width, height, 1000, 5);
   world.initialize();
   background(255);
 
-  const coords = []; 
+  noFill();
+}
 
-  strokeWeight (1); 
-  stroke (0); 
+let sw = false;
 
-  for (let being of world.beings){
-    coords.push(being.pos.x, being.pos.y); 
-    point(being.pos.x, being.pos.y); 
-  }
+function draw() {
+  // background(255);
+  world.run();
+    let being_coordinates = [];
+    for (let being of world.beings) {
+      being_coordinates.push(being.pos.x, being.pos.y);
+    }
 
+    render_as_mesh(being_coordinates);
+}
+
+function render_as_mesh(coords) {
   const delaunay = new Delaunator(coords);
-
   let coordinates = [];
 
   for (let i = 0; i < delaunay.triangles.length; i += 3) {
@@ -56,56 +62,49 @@ function setup() {
     ]);
   }
 
-  strokeWeight(1);
-  stroke(0,255,0);
+  stroke(sw ? 0 : 255, 1); //be black.
 
-  // console.log(coordinates); 
-  
-  for (let i = 0; i<coordinates.length; i++){
-    beginShape(); 
-    vertex(coordinates[i][0][0], coordinates[i][0][1]);
-    vertex(coordinates[i][1][0], coordinates[i][1][1]);
-    vertex(coordinates[i][2][0], coordinates[i][2][1]);
-    endShape(CLOSE); 
+  for (let i = 0; i < coordinates.length; i++) {
+    const first = { x: coordinates[i][0][0], y: coordinates[i][0][1] };
+    const second = { x: coordinates[i][1][0], y: coordinates[i][1][1] };
+    const third = { x: coordinates[i][2][0], y: coordinates[i][2][1] };
+
+    //transparency is based on average distance:
+    let d1 = dist(first.x, first.y, second.x, second.y);
+    let d2 = dist(second.x, second.y, third.x, third.y);
+    let d3 = dist(third.x, third.y, first.x, first.y);
+
+    let avg_d = (d1 + d2 + d3) / 3;
+
+    let closeness = map(avg_d, 2, width / 5, 1, 0.01);
+
+    //points:
+    // stroke(sw ? 0 : 255, 1); //be black.
+    strokeWeight(1);
+
+    point(first.x, first.y);
+    point(second.x, second.y);
+    point(third.x, third.y);
+
+    //lines:
+    // stroke(sw ? 0 : 255); //be black.
+    strokeWeight(0.5);
+
+    //fills:
+    const op = 0;
+    fill(255, sw ? closeness : 0);
+
+    beginShape();
+    vertex(first.x, first.y);
+    vertex(second.x, second.y);
+    vertex(third.x, third.y);
+    endShape(CLOSE);
+    sw = !sw;
   }
-
-
-  noFill();
 }
-
-function draw() {
-  world.run();
-
-  // for (let i = 0; i < world.beings.length; i += 3) {
-  //   let being_1 = world.beings[i];
-  //   let being_2 = world.beings[i + 1];
-  //   let being_3 = world.beings[i + 2];
-
-  //   strokeWeight (1);
-  //   stroke (0);
-
-  //   beginShape();
-  //   vertex(being_1.pos.x, being_1.pos.y);
-  //   vertex (being_2.pos.x, being_2.pos.y);
-  //   vertex(being_3.pos.x, being_3.pos.y);
-  //   endShape(CLOSE);
-
-  //   strokeWeight (5);
-  //   stroke (0);
-  //   point(being_1.pos.x, being_1.pos.y);
-  //   point(being_2.pos.x, being_2.pos.y);
-  //   point(being_3.pos.x, being_3.pos.y);
-  // }
-
-  // console.log(Delaunator);
-
-  noLoop();
-}
-
-function render(pts) {}
 
 /*
-for delanuay triangulation:
+helper for delanuay triangulation:
 */
 
 !(function (t, i) {
