@@ -5,13 +5,13 @@ thought:
 all beings are connected to each other via an invisible mesh. 
 
 expression: 
-draw a vertex at the position of each being. 
+treat the position of each being as a vertex. generate a triangular-mesh by finding tuples close to each other, so that no point is inside a face. keep generating the mesh over time, as beings move.
 
 parameters: 
-population:
-day-length: 
+population: 1000
+day-length: 5
 
-xxth month, year.
+24th july, 2026.
 */
 
 let world;
