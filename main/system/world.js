@@ -4,7 +4,7 @@ class World {
     h,
     _init_population = 4,
     _day_length = 24,
-    _max_mass = 20,
+    _max_mass = 10,
     _debug_mode = false,
   ) {
     //inherited:
