@@ -64,13 +64,13 @@ class Being {
 
     let direction = p5.Vector.sub(this.destination, this.pos);
 
-    let speed = (this.energy / this.mass);
+    let speed = this.energy / this.mass;
 
     //don't overshoot:
     if (direction.mag() <= speed) {
       this.pos.set(this.destination);
     } else {
-      speed * this.speed_mult; 
+      speed * this.speed_mult;
       direction.normalize();
       direction.mult(speed);
       this.pos.add(direction);
@@ -82,18 +82,9 @@ class Being {
   beings are constrained to a surface.
   */
   constrain() {
-    if (
-      this.pos.x + this.mass / 2 >= width ||
-      this.pos.x - this.mass / 2 <= 0
-    ) {
-      this.speed.x *= -1;
-    }
-    if (
-      this.pos.y + this.mass / 2 >= height ||
-      this.pos.y - this.mass / 2 <= 0
-    ) {
-      this.speed.y *= -1;
-    }
+    this.pos.x = constrain(this.pos.x, this.mass / 2, width - this.mass / 2);
+
+    this.pos.y = constrain(this.pos.y, this.mass / 2, height - this.mass / 2);
   }
   /*
   when the world is out of balance, beings in close proximity of each other (between ages 18-45) have a chance of reproducing.
