@@ -277,10 +277,13 @@ class World {
   }
   show_debugs() {
     push();
+    rectMode(CENTER, CENTER); 
     for (let i = 0; i < this.hotspots.length; i++) {
-      strokeWeight(5);
+      noFill(); 
+      strokeWeight(1);
       stroke(255, 0, 0);
-      point(this.hotspots[i][0], this.hotspots[i][1]);
+      square(this.hotspots[i][0], this.hotspots[i][1], world.max_mass);
+      // point(this.hotspots[i][0], this.hotspots[i][1]);
     }
     pop();
 

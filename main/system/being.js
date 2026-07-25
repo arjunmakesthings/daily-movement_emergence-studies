@@ -33,21 +33,39 @@ class Being {
   show() {
     push();
     noFill();
-    let col = map(this.age, 0, 80, 190, 0);
+
+    let t = this.age / 80; // normalize age 0-80
+
+    let col = map(
+      4 * Math.pow(t - 0.5, 2), // 1 at edges, 0 at middle
+      0,
+      1,
+      0,
+      190,
+    );
 
     translate(this.pos.x, this.pos.y);
 
     stroke(col);
     circle(0, 0, this.mass);
 
-    //show heading:
     const dir = p5.Vector.sub(this.destination, this.pos);
-    rotate(dir.heading());
-    // line(0, 0, this.mass * 0.75, 0);
-    pop();
 
-    stroke(this.speed * 100);
-    line(this.pos.x, this.pos.y, this.destination.x, this.destination.y);
+    if (dir.mag() > this.mass && this.age > 1) {
+      const heading = dir.heading();
+
+      rotate(heading);
+
+      line(0, 0, this.mass * 0.99, 0);
+      push();
+      translate(this.mass * 0.99, 0);
+
+      line(0, 0, -this.mass * 0.25, -this.mass * 0.15);
+      line(0, 0, -this.mass * 0.25, this.mass * 0.15);
+
+      pop();
+    }
+    pop();
   }
   move() {
     //move according to a schedule:
