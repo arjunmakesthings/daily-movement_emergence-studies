@@ -1,5 +1,5 @@
 /*
-interpretation #4.0: meetings are ripples.
+interpretation #4.1: meetings are ripples.
 
 thought: 
 meeting people can be resounding. when two beings meet, a ripple is sent through in space & time; that may affect other beings. 
@@ -20,10 +20,10 @@ let ripples = [];
 function setup() {
   createCanvas(1000, 1000);
   //accepts the following: (width, height, [population, day_length, max_mass, debug_mode])
-  world = new World(width, height, 1000, 10, 30);
+  world = new World(width, height, 500, 10, 30);
   world.initialize();
 
-  background(255);
+  background(0);
 
   noFill();
 }
@@ -46,14 +46,14 @@ function draw() {
 
         const d = p5.Vector.dist(being.pos, neighbour.pos); //how far away are they. can only be more than max_mass.
 
-        stroke(255, 20);
-        strokeWeight(0.5);
+        stroke(0, 5);
+        strokeWeight(1);
         noFill();
         line(being.pos.x, being.pos.y, neighbour.pos.x, neighbour.pos.y);
 
-        const exists = ripples.some((r) => dist(r.cx, r.cy, cp.x, cp.y) < 50);
+        const exists = ripples.some((r) => dist(r.cx, r.cy, cp.x, cp.y) < 20);
 
-        if (!exists) {
+        if (!exists & ripples.length < 100) {
           ripples.push(new Ripple(cp.x, cp.y, d));
         }
         // ripples.push(new Ripple(cp.x, cp.y, d));
@@ -80,6 +80,7 @@ function show_being(p, m) {
 }
 
 const m_jit = 1;
+let sw = false;
 
 class Ripple {
   constructor(cx, cy, str) {
@@ -87,38 +88,41 @@ class Ripple {
     this.cy = cy;
     this.str = str;
 
-    this.a = 100;
+    this.a = 50;
 
     this.r = 1;
     this.max_r = map(
-      constrain(str, world.max_mass, world.max_mass * 4),
+      constrain(str, world.max_mass, world.max_mass * 2),
       world.max_mass,
-      world.max_mass * 4,
-      200,
+      world.max_mass * 2,
+      width,
       50,
     );
   }
 
   show() {
-    strokeWeight(2);
-    stroke(0, this.a);
+    strokeWeight(0.5);
+    stroke(255, this.a);
     push();
     translate(this.cx, this.cy);
 
-    for (let a = 0; a < TWO_PI; a += 0.01) {
+    for (let a = 0; a <= TWO_PI; a += 0.01) {
       const x = cos(a) * this.r;
       const y = sin(a) * this.r;
 
       const jit = { x: random(-m_jit, m_jit), y: random(-m_jit, m_jit) };
 
+      // stroke(sw ? 0 : 255, this.a);
+
       point(x + jit.x, y + jit.y);
+      // line (jit.x,jit.y,x,y); 
     }
     pop();
   }
 
   update() {
-    this.r += 1;
-    this.a--;
+    this.r ++;
+    this.a-=0.05;
   }
 }
 
