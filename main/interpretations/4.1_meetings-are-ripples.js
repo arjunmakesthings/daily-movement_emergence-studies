@@ -5,10 +5,10 @@ thought:
 meeting people can be resounding. when two beings meet, a ripple is sent through in space & time; that may affect other beings. 
 
 expression: 
-connect beings close to each other with a white line. when two beings collide, create a ~circular ripple that expands from the point of collision. the strength of the ripple depends on how close the two beings were. lay this out over time.
+connect beings close to each other with a black line. when two beings collide, send out a circular ripple expanding from the point of collision. the closer the beings are, the further the ripple goes. lay this out over time.
 
 parameters: 
-population: 1000
+population: 500
 day-length: 10
 
 27th july, 2026.
