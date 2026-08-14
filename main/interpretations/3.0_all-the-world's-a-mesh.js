@@ -19,7 +19,7 @@ let world;
 let sorted = [];
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(windowWidth, windowHeight);
   //accepts the following: (width, height, [population, day_length, debug_mode])
   world = new World(width, height, 1000, 5);
   world.initialize();

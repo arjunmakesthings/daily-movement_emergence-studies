@@ -2,7 +2,7 @@
 interpretation #4.1: meetings are ripples.
 
 thought: 
-meeting people can be resounding. when two beings meet, a ripple is sent through in space & time; that may affect other beings. 
+meeting people can be resounding. when two beings meet, a ripple is sent through space & time; that may affect other beings. 
 
 expression: 
 connect beings close to each other with a black line. when two beings collide, send out a circular ripple expanding from the point of collision. the closer the beings are, the further the ripple goes. lay this out over time.
@@ -18,7 +18,7 @@ let world;
 let ripples = [];
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(windowWidth, windowHeight);
   //accepts the following: (width, height, [population, day_length, max_mass, debug_mode])
   world = new World(width, height, 500, 10, 30);
   world.initialize();

@@ -1,14 +1,16 @@
 /*
-interpretation #1.3: born in pairs. 
+interpretation #1.5: born in pairs. 
 
 thought: 
-beings are destined to be with someone that they were born close (in proximity & age) to. however, as they live out their lives, they may be close or separated in the world. ideology borrowed from: red thread of fate -> https://en.wikipedia.org/wiki/Red_thread_of_fate. 
+beings are destined to be with someone that they were born close to (in proximity & age). however, as they live out their lives, they may be close or separated in the world. thought is borrowed from the red thread of fate.
+
+(ideology borrowed from: red thread of fate -> https://en.wikipedia.org/wiki/Red_thread_of_fate.)
 
 expression:
-draw a red line between a being & the person they're supposed to be with over time. the closer they are, the more intense the line; and vice-versa.
+draw a set of red lines between a being & the person that they're "destined" to be with, over time. the closer they are to each other, the more red lines are drawn, & the stronger they are (in colour and density). 
 
 parameters: 
-population = 40; 
+population = 4 (shown); 
 day length = 10;
 
 # 260730.
@@ -25,11 +27,12 @@ pairs = [[being 1, being 2]].
 let pairs = [];
 
 let diagonal = 0;
+// const sw = 0.1;
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(windowWidth, windowHeight);
   //accepts the following: (width, height, [population, day_length, debug_mode])
-  world = new World(width, height, 4, 10);
+  world = new World(width, height, 200, 10);
   world.initialize();
 
   //sort beings by age:
@@ -105,15 +108,15 @@ function draw() {
   world.run();
 
   // background(190);
-
-  for (let i = 0; i < pairs.length; i++) {
+  for (let i = 0; i < 2; i++) {
     const a = pairs[i][0];
     const b = pairs[i][1];
 
-    const d = p5.Vector.dist(a.pos, b.pos);
+    const d = Math.floor(p5.Vector.dist(a.pos, b.pos));
 
-    const min_rad = a.mass / 2 + b.mass / 2;
-    const max_rad = width / 2;
+    const min_d = Math.floor(a.mass / 2 + b.mass / 2);
+    diagonal = Math.hypot(height, width);
+    const max_d = Math.floor(width / 2);
     // const max_rad = (a.mass + b.mass) * (width*4 / world.beings.length);
 
     //for debug:
@@ -132,46 +135,53 @@ function draw() {
     // line(a.pos.x, a.pos.y, b.pos.x, b.pos.y);
 
     //normalize distance:
-    const t = constrain(map(d, min_rad, max_rad, 1, 0), 0, 1);
 
-    const hue = 355;
-    const sat = lerp(45, 95, t);
-    const light = lerp(22, 48, t);
+    let n = Math.floor(map(d, min_d + 1, max_d, 10, 2));
 
-    // very transparent so threads accumulate
-    const alpha = lerp(0.001, 0.01, t);
+    const dir = p5.Vector.sub(b.pos, a.pos).normalize();
+    const normal = createVector(-dir.y, dir.x); // 90° rotation
 
-    // stroke(color(hue, sat, light, alpha));
+    let sw = map(d, min_d, max_d, 1, 0.01);
 
-    strokeWeight(2);
-    let bounce = map(sin(i), -1, 1, 0, 100);
-    stroke(0, 0, bounce, 0.05);
-    point(a.pos.x, a.pos.y);
-    point(b.pos.x, b.pos.y);
+    const spacing = sw + sw * 0.75;
 
-    // slightly thicker when close
-    strokeWeight(lerp(0.1, 0.5, t));
+    for (let j = 0; j < n; j++) {
+      // center the bundle around the original line
+      const offset = (j - (n - 1) / 2) * spacing;
 
-    for (let j = 0; j < 3; j++) {
-      const ox = random(-0.4, 0.4);
-      const oy = random(-0.4, 0.4);
+      const off = p5.Vector.mult(normal, offset);
 
-      stroke(color(hue, sat, light, alpha));
-      line(a.pos.x + ox, a.pos.y + oy, b.pos.x + ox, b.pos.y + oy);
+      let sat = Math.floor(map(d, min_d, max_d, 100, 1));
+      let light = Math.floor(map(d, min_d, max_d, 30, 110));
+
+      const a2 = p5.Vector.add(a.pos, off);
+      // draw_point(a2, sat, light);
+      const b2 = p5.Vector.add(b.pos, off);
+      // draw_point(b2, sat, light);
+
+      const a_noise = noise(a2.x * a2.y) * 10;
+      a2.add(a_noise);
+      const b_noise = noise(b2.x * b2.y) * 10;
+      b2.add(b_noise);
+
+      draw_line(a2, b2, sw, sat, light);
     }
-
-    // line(a.pos.x, a.pos.y, b.pos.x, b.pos.y);
   }
 
   // noLoop();
 }
 
-function draw_line(start, end, w = 1, a = 100, c) {
-  const col = color(c, 100, 50);
-  col.setAlpha(a);
-  stroke(col);
-  strokeWeight(w);
+function draw_line(start, end, sw, sat, light) {
+  strokeWeight(sw);
+  stroke(355, sat, light, 0.5);
   line(start.x, start.y, end.x, end.y);
+}
+
+function draw_point(pos, sat, light) {
+  strokeWeight(1);
+  // stroke(355, sat, light, 1);
+  stroke(0, 0, 0, 0.03);
+  point(pos.x, pos.y);
 }
 
 //debug helper:
