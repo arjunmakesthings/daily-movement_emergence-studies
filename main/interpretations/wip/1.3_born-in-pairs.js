@@ -1,17 +1,17 @@
 /*
-interpretation 1: 
+interpretation #1.3: born in pairs. 
 
 thought: 
-beings are destined to be with someone that they were born close (both in proximity & age) to. however, that may not be the case, and they may be separated in the world.
+beings are destined to be with someone that they were born close (in proximity & age) to. however, as they live out their lives, they may be close or separated in the world. ideology borrowed from: red thread of fate -> https://en.wikipedia.org/wiki/Red_thread_of_fate. 
 
 expression:
-draw a line between a being & their partner over time. the closer they are, the stronger the line.
+draw a line between a being & their partner over time. the closer they are, the darker the line; the further they are, the lighter the line.
 
 parameters: 
-population = 1000; 
+population = 40; 
 day length = 10;
 
-# 260721.
+# 260730.
 */
 
 let world;
@@ -29,7 +29,7 @@ let diagonal = 0;
 function setup() {
   createCanvas(1000, 1000);
   //accepts the following: (width, height, [population, day_length, debug_mode])
-  world = new World(width, height, 2000, 5);
+  world = new World(width, height, 40, 10);
   world.initialize();
 
   //sort beings by age:
@@ -39,15 +39,9 @@ function setup() {
     pairs.push([sorted[i], sorted[i + 1]]);
   }
 
-  for (let i = 0; i < pairs.length; i++) {
-    pairs[i].push(i);
-  }
-
-  colorMode(HSL, pairs.length, 100, 100);
-
   diagonal = Math.hypot(height, width);
 
-  background(pairs.length, 100, 100);
+  background(255);
 
   noFill();
 }
@@ -104,28 +98,30 @@ function getProximitySortedBeings(beings) {
 function draw() {
   world.run();
 
-  // background (255);
-  if (frameCount % (60 * world.day_length) == 0) {
-    for (let i = 0; i < pairs.length; i++) {
-      const first = pairs[i][0];
-      const next = pairs[i][1];
+  // background(190); 
 
-      //get what you care about:
-      const d = abs(first.pos.dist(next.pos));
-      const avg_age = Math.floor((first.age + next.age) / 2);
-      const sum_of_masses = first.mass / 2 + next.mass / 2;
+  for (let i = 0; i < pairs.length; i++) {
+    const a = pairs[i][0];
+    const b = pairs[i][1];
 
-      //the closer you are, the stronger the connection.
-      // const a = map(d, sum_of_masses, diagonal - sum_of_masses, 0.9, 0.01);
+    const d = p5.Vector.dist(a.pos, b.pos);
 
-      //diagonal was too much, and improbable.
-      const a = map(d, sum_of_masses, width, 0.1, 0.0001);
+    const min_rad = a.mass / 2 + b.mass / 2;
+    const max_rad = width/2;
+    // const max_rad = (a.mass + b.mass) * (width*4 / world.beings.length);
 
-      //the younger you both are, the stronger you chances of being together:
-      const sw = map(avg_age, 0, 80, 3, 1);
+    //for debug:
+    // const poc = p5.Vector.add(a.pos, b.pos).div(2);
+    // show_reach(poc, min_rad, 0);
+    // show_reach(poc, max_rad, 1);
 
-      draw_line(first.pos, next.pos, sw, a, i);
-    }
+    const sc = constrain(map(d, min_rad, max_rad, 0, 255), 0, 255);
+
+    let sw = constrain(map(d, min_rad, max_rad, 2, 1), 1, 2);
+
+    strokeWeight(1);
+    stroke(sc, 10);
+    line(a.pos.x, a.pos.y, b.pos.x, b.pos.y);
   }
 
   // noLoop();
@@ -137,4 +133,14 @@ function draw_line(start, end, w = 1, a = 100, c) {
   stroke(col);
   strokeWeight(w);
   line(start.x, start.y, end.x, end.y);
+}
+
+//debug helper:
+function show_reach(pos, rad, m) {
+  noFill();
+  strokeWeight(1);
+
+  m == 0 ? stroke(0, 255, 0) : stroke(255, 0, 0);
+
+  circle(pos.x, pos.y, rad);
 }

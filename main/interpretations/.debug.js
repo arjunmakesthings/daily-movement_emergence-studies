@@ -3,7 +3,7 @@
 let world;
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(windowWidth, windowHeight);
 
   world = new World(width, height, 50, 10, 20, true);
   world.initialize();
