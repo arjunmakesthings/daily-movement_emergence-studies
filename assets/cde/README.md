@@ -1,6 +1,6 @@
 # cde: project context
 
-my working notes on `daily-movement_emergence-studies`, on branch `cde`. they started from the project readme and the code at commit `92035c4`, and now describe the base simulation after this session's rework (uncommitted when written).
+my working notes on `daily-movement_emergence-studies`, on branch `cde`. they started from the project readme and the code at commit `92035c4`, and now describe the base simulation after the rework, plus the new interpretation versions. **nothing from this work is committed yet** (as of 2nd october 2026). see "where we left off" at the bottom to pick up.
 
 ---
 
@@ -28,9 +28,12 @@ main/interpretations/          # finished ("happy with") interpretations
   .template.js                 # starter for new interpretations
   .ideas.txt                   # idea list
   1.5_born-in-pairs.js
+  1.6_born-in-pairs.js         # new (to compare with 1.5)
   2.0_missed-connections.js
+  2.2_missed-connections.js    # new (to compare with 2.0; 2.1 is taken in wip/)
   3.0_all-the-world's-a-mesh.js   # inlines its own copy of delaunator
   4.1_meetings-are-ripples.js
+  4.2_meetings-are-ripples.js  # new (to compare with 4.1)
   wip/                         # earlier/alternate versions (1.1, 1.3, 1.4, 2.1, 4.0)
 trials/                        # scratch experiments (curve tests, discarded functions, shader attempts)
 paper/                         # 260806_software-study.pdf + references (wolfram, bar-yam, reas links)
@@ -156,6 +159,8 @@ for headless testing i run the same files in node with a p5 stand-in (kept in th
 - movement must look **calm and free-flowing**. no jarring speed, and no everyone-moves-at-once moments.
 - **noise is intended**: unlikely things (a busy 60-year-old) must be possible, just not likely.
 - births on the road are fine. children not going out much is fine. travelling share as it is is fine.
+- **an interpretation's "thought" is always the user's; never edit it.** when changing an interpretation, rewrite its "expression" (the technical implementation) so it describes exactly what the code does. make a new version file (e.g. 1.5 → 1.6) so the two can be compared, and leave the original alone.
+- when testing or describing, say plainly what was and wasn't checked (e.g. headless node runs vs. a browser).
 
 ---
 
@@ -165,13 +170,10 @@ for headless testing i run the same files in node with a p5 stand-in (kept in th
 - **over-60s in short days** mostly stay home (low energy + short day).
 - **sparse worlds** (few beings on a big canvas) move faster on screen, since speed follows place spacing.
 - **newborns born away from home** take days to crawl home once they turn 2.
-- the project readme's `World` signature and some interpretation header comments still leave out `max_mass`.
+- some older interpretation header comments still leave out `max_mass` (the project readme is fixed, as are 1.6, 2.2 and 4.2).
 
-### interpretation quirks noticed earlier (not touched)
-
-- `4.1`: `!exists & ripples.length < 100` uses bitwise `&` (works by precedence; `&&` was intended).
-- `1.5` only draws `pairs[0..1]` and never updates pairs when beings die (pairs can point at dead beings).
-- `3.0` inlines all of delaunator although `assets/scripts/delaunator.min.js` exists.
+- **4.x ripple cap:** at most 100 ripples, each living about 11–24s, limits how many meetings get a ripple (in both 4.1 and 4.2). faster fading or a higher cap would show more meetings, but it changes the look, so it's left for the user to decide.
+- `3.0` inlines all of delaunator although `assets/scripts/delaunator.min.js` exists (only a cleanup; not done).
 
 ---
 
@@ -184,7 +186,48 @@ for headless testing i run the same files in node with a p5 stand-in (kept in th
 | 3.0 | all the world's a mesh | 1000, 5 | a delaunay triangulation of all being positions every frame. triangles alternate fill (white, alpha = closeness) and stroke colour. it accumulates. |
 | 4.1 | meetings are ripples | 500, 10, 30 | faint black lines between neighbours on a black background. "meetings" spawn jittered point-circle ripples (at most 100, deduplicated within 20px). a closer meeting gives a larger max radius. ripples grow 1px a frame and fade. |
 
-the system changes alter how these look (calmer, routine-based movement, crowds at places). they haven't been re-checked against the new system yet.
+### new versions (2nd october 2026), made after the system rework, to compare with the originals
+
+each one keeps the user's thought unchanged and has a rewritten expression. all three are in `index.html` as commented-out lines under their originals.
+
+- **1.6 born in pairs** (vs 1.5):
+  - pairs are chained by **proximity and age**, weighed equally (`apartness` = distance / world diagonal + age gap / 100). 1.5 used age only to break exact ties, which never happen. the median age gap within a pair went from 16 to 3.
+  - the thread **never breaks**: line count, stroke weight, saturation and lightness are clamped. in 1.5, pairs more than half the width apart drew nothing, because the line count went negative.
+  - a thread **ends when one of the pair dies**. 1.5 kept drawing to the dead being's last spot.
+- **2.2 missed connections** (vs 2.0):
+  - lines are drawn only when **at least one of the two is travelling**, since the thought is about walking past people, and in the new system beings stay together at places. that's about 970 lines a frame vs about 2,300.
+  - fixed an undeclared `neighbour` variable.
+- **4.2 meetings are ripples** (vs 4.1):
+  - a meeting is an **encounter**, from coming close (within 2× max mass) to parting, tracked per pair with ids held in a `WeakMap`.
+  - each meeting sends **one** ripple at its **closest moment**: when they start drifting apart by more than 0.5px, or haven't got closer for 10 frames. its size still follows how close they came.
+  - one chance only: if the cap is full, the meeting passes without a ripple. waiting for room would favour long meetings over passings.
+  - in 4.1, crowds standing together set off ripples continuously. ripples with a moving being at their centre went from 37% to 46%.
+  - `&` → `&&`.
+- **3.0:** no new version; it already meets its thought.
+
+how they were tested: headless node runs with p5 drawing calls stubbed out, counting lines and ripples and checking pairs. **they haven't been looked at in a browser by me.**
+
+---
+
+## where we left off (2nd october 2026)
+
+- **done:**
+  - the base simulation rework.
+  - the analysis tool.
+  - updates to the project `README.md`: the system paragraph (home, staying, energy, vigor, noise), the `World` signature with max mass, the world and being properties, and a pointer to the analysis tool.
+  - the new interpretation versions 1.6, 2.2 and 4.2.
+- **the user is comparing** the old and new interpretations in the browser. at last look, `index.html` had **3.0** active.
+- **nothing is committed.** the changed and new files are `main/system/world.js`, `main/system/being.js`, `README.md`, `index.html`, `main/interpretations/{1.6,2.2,4.2}_*.js` and `assets/cde/` (these notes plus `analysis/`). `main/interpretations/.debug.js` was changed by the user (500, 5, 10, true).
+- **next likely steps:**
+  1. hear the user's verdict on 1.6, 2.2 and 4.2: keep, adjust, or promote to "happy with".
+  2. decide the 4.x ripple cap and lifetime.
+  3. the open threads above: death before 50, over-60s in short days, speed in sparse worlds, newborns crawling home.
+  4. maybe new interpretations that use the new system's data (`state`, `place`, `home`, `busyness`, `place.crowd`, `world.clock`).
+  5. commit when the user asks; `cde` is the current branch and `main` the main branch.
+- **headless testing setup** (it lived in the session scratchpad, so it's gone; recreate it if needed):
+  - load `world.js` and `being.js` in node with `vm.runInThisContext` (not a separate `vm` context: global lookups there are about 10× slower and skew timings).
+  - stub p5: `createVector` with a small vector class (add, sub, mag, setMag, heading, copy, set, dist, div, mult, normalize, plus static sub, dist, add and mult), `constrain`, `random` (accepting an array or a range), `randomGaussian`, `shuffle`, `PI`, `sqrt`, `cos`, `sin`, `noStroke`, `p5.Vector`. drive `frameCount` yourself.
+  - for interpretations, also stub the drawing calls (`line`, `point`, `stroke`, …) and `noise`, `dist`, `map`, `width`, `height`.
 
 ---
 
