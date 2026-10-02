@@ -5,7 +5,7 @@ let world;
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  world = new World(width, height, 50, 10, 20, true);
+  world = new World(width, height, 500, 5, 10, true);
   world.initialize();
 }
 
