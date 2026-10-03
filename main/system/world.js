@@ -18,12 +18,15 @@ class World {
     this.debug_mode = _debug_mode;
 
     //declared:
-    this.time = 0; //the hour of the day.
-    this.clock = 0; //the time of day, in hours (incl. fractions).
-    this.hour_length = 60; //frames in an hour.
+    //a day is always 24 hours (as we know them), & everything in it is measured in those hours. day_length only sets how long a day lasts on screen: day_length × 60 frames (~day_length seconds). so, it's how fast the world plays.
+    this.day_hours = 24;
+    this.day_frames = this.day_length * 60; //frames in a day.
+    this.hour_length = this.day_frames / this.day_hours; //frames in an hour (60 when day_length is 24; fewer in shorter days).
+    this.time = 0; //the hour of the day (0–23).
+    this.clock = 0; //the time of day, in hours (incl. fractions; 0–24).
     this.new_hour = false; //true on the first frame of every hour.
     this.new_day = false; //true on the first frame of every day.
-    this.min_stay = Math.min(1, this.day_length / 10); //the least hours a being stays at a place (shorter in short days).
+    this.min_stay = 1; //the least hours a being stays at a place.
     this.beings = [];
 
     //p5 stuff; globally; once:
@@ -45,7 +48,7 @@ class World {
     //roughly, the distance between neighbouring places:
     this.place_spacing = this.reach * Math.sqrt(Math.PI / places_n);
 
-    //speed is measured in the world's own geography: at full energy (10), a being reaches a neighbouring place in about 3/4 of an hour.
+    //speed is measured in the world's own geography: at full energy (10), a being reaches a neighbouring place in about 3/4 of an hour. (so, on screen, beings move faster in shorter days.)
     this.pace = this.place_spacing / (0.75 * this.hour_length); //pixels per frame.
   }
 
@@ -199,14 +202,16 @@ class World {
   }
 
   /*
-  keep time as a day_length-second loop (1 hour = 60 frames).
+  keep time as a day_length-second loop: the 24 hours of a day are spread over its frames. (an hour needn't be a whole number of frames; so, a new hour is the first frame past each hour's mark.)
   */
   keep_time() {
-    this.new_hour = frameCount % this.hour_length === 0;
-    this.new_day = frameCount % (this.hour_length * this.day_length) === 0;
-    this.time = Math.floor(frameCount / this.hour_length) % this.day_length;
-    this.clock =
-      (frameCount % (this.hour_length * this.day_length)) / this.hour_length;
+    const frame_of_day = frameCount % this.day_frames;
+    this.new_day = frame_of_day === 0;
+    this.clock = frame_of_day / this.hour_length;
+    this.time = Math.floor(this.clock);
+    this.new_hour =
+      this.new_day ||
+      Math.floor((frame_of_day - 1) / this.hour_length) < this.time;
   }
   /*
   kill beings, when beings >2.
@@ -214,7 +219,7 @@ class World {
   kill_and_make_beings() {
     //pick the killing hour once, at the start of each day.
     if (this.new_day) {
-      this.killing_time = Math.floor(Math.random() * this.day_length);
+      this.killing_time = Math.floor(Math.random() * this.day_hours);
     }
 
     //once a day, at the killing hour, each being may die (by its own chance; see being.get_death_chance).
@@ -359,27 +364,26 @@ class World {
     );
     pop();
 
-    //log once per hour, not every frame:
+    //log once per hour, not every frame. it shows what a being exposes to interpretations (as in the readme), by the same names:
     if (!this.new_hour) return;
+
+    const xy = (v) => v.x.toFixed(0) + ", " + v.y.toFixed(0);
 
     console.log(
       "beings[" + 0 + "]" + "\n",
-      "time: " + this.time + "\n",
       "age: " + tracked.age + "\n",
+      "pos: " + xy(tracked.pos) + "\n",
       "mass: " + tracked.mass + "\n",
       "energy: " + tracked.energy + "\n",
-      "speed: " + tracked.get_speed().toFixed(2) + "\n",
-      "state: " + tracked.state + " (slot " + tracked.slot + ")\n",
+      "destination: " +
+        (tracked.destination ? xy(tracked.destination) : "null") +
+        "\n",
+      "busyness: " + tracked.busyness + "\n",
       "schedule: " +
-        tracked.schedule
-          .map(([start, end]) => start.toFixed(1) + "-" + end.toFixed(1))
-          .join(", ") +
+        tracked.schedule.map(([start, end]) => start + "-" + end).join(", ") +
         "\n",
-      "destinations: " +
-        tracked.destination.x +
-        ", " +
-        tracked.destination.y +
-        "\n",
+      "get_speed(): " + tracked.get_speed().toFixed(2) + "\n",
+      "get_neighbours(): " + tracked.get_neighbours().length + " beings" + "\n",
     );
   }
 }

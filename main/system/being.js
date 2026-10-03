@@ -21,21 +21,26 @@ class Being {
     this.energy = this.get_energy();
 
     //where a being is going, and what it's doing:
-    this.home = this.get_nearest_place(); //every day starts & ends here.
-    this.destinations = []; //one place per slot of the schedule.
-    this.destination = this.pos.copy();
+    this.destinations = []; //the places it frequents: one per slot of the schedule.
     this.place = null; //the place being travelled to, or stayed at.
+    this.destination = null; //...& its position.
     this.slot = -1; //the slot of the schedule being followed (-1: not yet planned).
     this.state = "staying"; //"travelling" or "staying".
 
-    //everyone keeps their own rhythm: a being's day starts (at home) at its own hour, frame-exact.
+    //everyone keeps their own rhythm: a being's day starts at its own hour, frame-exact.
     this.day_start =
-      Math.floor(random(world.day_length) * world.hour_length) /
+      Math.floor(random(world.day_hours) * world.hour_length) /
       world.hour_length;
 
     this.busyness = 0; //how many places the being would like to be at in a day (set with the schedule).
-    this.schedule = this.get_schedule(this.age);
+    this.slots = this.get_schedule(this.age); //the schedule, in hours incl. fractions (see get schedule()).
     this.next_plan = null; //"routine" or "timings": made on a birthday, taken up when the being's next day starts.
+  }
+  /*
+  the schedule, in whole hours: [[start, end], ...], each rounded down to its hour (like world.time). (the being keeps it to the frame, in slots.)
+  */
+  get schedule() {
+    return this.slots.map(([start, end]) => [Math.floor(start), Math.floor(end)]);
   }
   /*
   beings age, exist & move.
@@ -72,7 +77,7 @@ class Being {
     stroke(col);
     circle(0, 0, this.mass);
 
-    const dir = p5.Vector.sub(this.destination, this.pos);
+    const dir = this.destination ? p5.Vector.sub(this.destination, this.pos) : createVector(0, 0);
 
     if (dir.mag() > this.mass && this.age > 1) {
       const heading = dir.heading();
@@ -178,23 +183,21 @@ class Being {
   a schedule is a closed loop of [start, end] hours (fractions of an hour too): [[h0, h1], [h1, h2], ..., [hn, h0]]. at a slot's start, the being leaves for that slot's place, and stays there until the slot's end. so, a slot is as long as the trip to its place, plus the stay there.
   */
   get_schedule(age) {
-    //calculate number of time slots based on age. busyness is thought of in a 24-hour day, and scaled to the world's day.
-    const day_scale = world.day_length / 24;
-
+    //calculate number of time slots based on age.
     const min = 2;
-    const max = Math.max(min, Math.round(12 * day_scale));
+    const max = 12;
     const peak = 25;
     const sigma = 10; //spread-width.
 
     const g = Math.exp(-Math.pow(age - peak, 2) / (2 * sigma * sigma));
     const mean_busyness = min + (max - min) * g;
 
-    const spread = (1.25 + (1 - g) * 3.5) * day_scale;
+    const spread = 1.25 + (1 - g) * 3.5;
 
     let busyness = Math.round(randomGaussian(mean_busyness, spread));
     busyness = constrain(busyness, min, max);
 
-    //^ this is how many places the being would like to be at in a day (incl. home); the day may allow fewer.
+    //^ this is how many places the being would like to be at in a day; the day may allow fewer.
     this.busyness = busyness;
 
     this.get_new_destinations(busyness);
@@ -202,30 +205,31 @@ class Being {
     return this.get_timings();
   }
   /*
-  plan a day's route of (up to) n places. it starts at home, and each next place is picked near the last one. a place is only added if there's still time in the day to get there, stay, and get back home.
+  plan a routine: a loop of (up to) n places the being frequents, repeated every day. it starts at the place nearest to where the being is, and each next place is picked near the last one. a place is only added if there's still time in the day to get there, stay, and get back round to the first place (so that the loop closes).
   */
   get_new_destinations(n) {
     const min_stay = world.min_stay;
+    const first = this.get_nearest_place();
 
-    //the hours back home from each place (asked of every place, at every step; so, worked out once):
-    const hours_home = new Map(
+    //the hours back to the first place, from each place (asked of every place, at every step; so, worked out once):
+    const hours_back = new Map(
       world.places.map((place) => [
         place,
-        this.get_travel_hours(this.get_distance(place.pos, this.home.pos)),
+        this.get_travel_hours(this.get_distance(place.pos, first.pos)),
       ]),
     );
 
     //the least a stop can take: a trip to a neighbouring place, plus the least stay.
     const least_stop = this.get_travel_hours(world.place_spacing) + min_stay;
 
-    const route = [this.home];
-    let hours_used = min_stay; //the stay at home.
+    const route = [first];
+    let hours_used = min_stay; //the stay at the first place.
 
     while (route.length < n) {
       const last = route[route.length - 1];
       const stops_after = n - route.length - 1; //the stops still wished for, after this one.
 
-      const options = []; //places there's time to get to, stay at, and get back home from.
+      const options = []; //places there's time to get to, stay at, and get back round from.
       const roomy = []; //...that also leave room for the stops after.
 
       for (let place of world.places) {
@@ -235,12 +239,12 @@ class Being {
           hours_used +
           this.get_travel_hours(this.get_distance(last.pos, place.pos)) +
           min_stay +
-          hours_home.get(place);
+          hours_back.get(place);
 
-        if (hours > world.day_length) continue;
+        if (hours > world.day_hours) continue;
         options.push(place);
 
-        if (hours + stops_after * least_stop <= world.day_length) {
+        if (hours + stops_after * least_stop <= world.day_hours) {
           roomy.push(place);
         }
       }
@@ -257,12 +261,12 @@ class Being {
     this.destinations = route;
   }
   /*
-  time the route over a day, from the being's day start: each slot is the trip to its place, plus the stay there. the first trip (home) is from wherever the being is (at its day start, that's where its last day ended).
+  time the route over a day, from the being's day start: each slot is the trip to its place, plus the stay there. the first trip is from wherever the being is (at its day start, that's where its last day ended: the last place of its loop).
 
   if the day can't fit the whole route (a slower body), the last places are dropped. spare time makes some stays longer.
   */
   get_timings() {
-    const day = world.day_length;
+    const day = world.day_hours;
 
     let lengths = this.get_slot_lengths();
     while (this.sum(lengths) > day && this.destinations.length > 1) {
@@ -271,7 +275,7 @@ class Being {
     }
 
     if (this.destinations.length === 1) {
-      //only home: stay there all day.
+      //only one place: stay there all day.
       lengths = [day];
     } else {
       //spare time is split into random shares, one for each stay (so, stays end at any moment, not on the hour):
@@ -329,9 +333,9 @@ class Being {
   the current slot is the one whose hours contain the world's clock. slots loop around the day; a slot that ends where it starts lasts the whole day.
   */
   get_curr_slot() {
-    const day = world.day_length;
+    const day = world.day_hours;
 
-    return this.schedule.findIndex(([start, end]) => {
+    return this.slots.findIndex(([start, end]) => {
       const length = (end - start + day) % day || day;
       return (world.clock - start + day) % day < length;
     });
@@ -374,7 +378,7 @@ class Being {
   a being has arrived once it's within its place (and a place is as big as the crowd at it).
   */
   has_arrived() {
-    const d = this.get_distance(this.pos, this.place.pos);
+    const d = this.get_distance(this.pos, this.destination);
     return d <= world.get_place_radius(this.place);
   }
   /*
@@ -414,14 +418,14 @@ class Being {
   is this the first frame of the being's day?
   */
   is_day_start() {
-    const frame_of_day = frameCount % (world.hour_length * world.day_length);
+    const frame_of_day = frameCount % world.day_frames;
     return frame_of_day === Math.round(this.day_start * world.hour_length);
   }
   /*
   take up the plan made on the birthday: a new routine, or the same routine re-timed. either way, it's planned from where the being is, as its day starts.
   */
   take_up_plan() {
-    this.schedule =
+    this.slots =
       this.next_plan === "routine"
         ? this.get_schedule(this.age)
         : this.get_timings();

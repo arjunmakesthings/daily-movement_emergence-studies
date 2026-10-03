@@ -29,7 +29,7 @@ let next_id = 0;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   //accepts the following: (width, height, [population, day_length, max_mass, debug_mode])
-  world = new World(width, height, 500, 10, 30);
+  world = new World(width, height, 500, 24, 20);
   world.initialize();
 
   background(0);
@@ -53,7 +53,7 @@ function draw() {
 
       for (let neighbour of neighbours) {
         //we operate only on one neighbour.
-        stroke(0, 5);
+        stroke(0, 2.5);
         strokeWeight(1);
         noFill();
         line(being.pos.x, being.pos.y, neighbour.pos.x, neighbour.pos.y);

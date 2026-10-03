@@ -7,9 +7,7 @@
 
     <script src="../../scripts/p5.min.js"></script>
 
-    <!-- system: -->
-    <script src="../../../main/system/world.js"></script>
-    <script src="../../../main/system/being.js"></script>
+    <!-- systems: the new (main/system/) & the old (main/system/old/) are fetched & loaded by analysis.js, since both name their classes World & Being. -->
 
     <!-- analysis: -->
     <script src="./charts.js"></script>
@@ -220,6 +218,10 @@
         stroke-linejoin: round;
         stroke-linecap: round;
       }
+      .median.dashed {
+        stroke-dasharray: 6 5;
+        stroke-linecap: butt;
+      }
       .end-dot,
       .dot {
         fill: var(--c);
@@ -262,6 +264,10 @@
         width: 14px;
         height: 2px;
         border-radius: 1px;
+      }
+      .key.line.dashed {
+        width: 16px;
+        background: repeating-linear-gradient(90deg, var(--c) 0 5px, transparent 5px 8px);
       }
       .key.dot {
         width: 8px;
@@ -328,13 +334,23 @@
         color: var(--muted);
         font-weight: 500;
       }
+      table.checks td:nth-child(1),
       table.checks td:nth-child(2),
       table.odds td:first-child {
         white-space: normal;
       }
-      table.odds td.num {
+      table.checks td.result {
+        vertical-align: top;
+      }
+      table.odds .num {
         text-align: right;
+      }
+      table.odds td.num {
         font-weight: 600;
+      }
+      /* many cases: a line between worlds, none between a world's systems. */
+      table.data tr.case-first td {
+        border-top: 1px solid var(--axis);
       }
       .status {
         font-weight: 600;
@@ -345,21 +361,24 @@
       .status.critical {
         color: var(--critical);
       }
+      .status.na {
+        color: var(--muted);
+      }
     </style>
   </head>
   <body>
     <main>
       <h1>system analysis</h1>
       <p class="lede">
-        how age, energy, speed, busyness & death relate in the base simulation (the real world.js & being.js). noise is meant to be there: so, values are shown as spreads, and the odds of
-        unlikely things are counted.
+        how age, energy, speed, busyness & death relate in the base simulation: the new system (main/system/) against the old one (main/system/old/), both the real world.js &
+        being.js. new is blue & solid; old is orange & dashed. noise is meant to be there: so, values are shown as spreads, and the odds of unlikely things are counted.
       </p>
 
       <div class="controls">
         <label>width <input id="w" type="number" value="1440" min="200" step="10" /></label>
         <label>height <input id="h" type="number" value="900" min="200" step="10" /></label>
         <label>population <input id="pop" type="number" value="500" min="8" step="10" /></label>
-        <label>day length <input id="day" type="number" value="5" min="2" step="1" /></label>
+        <label>day length (s) <input id="day" type="number" value="5" min="2" step="1" /></label>
         <label>max mass <input id="mm" type="number" value="10" min="1" step="1" /></label>
         <label>days to simulate <input id="days" type="number" value="30" min="4" step="1" /></label>
         <label>beings per age <input id="per_age" type="number" value="200" min="20" step="20" /></label>

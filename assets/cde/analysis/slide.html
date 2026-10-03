@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>base-system, in graphs</title>
+
+    <!-- alegreya & alegreya-sans (as in presentations/assets/scripts/style.css; here, from google-fonts): -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,600;1,400&family=Alegreya+Sans:ital,wght@0,300;0,400;1,400&display=block"
+      rel="stylesheet"
+    />
+
+    <script src="../../scripts/p5.min.js"></script>
+
+    <!-- system: -->
+    <script src="../../../main/system/world.js"></script>
+    <script src="../../../main/system/being.js"></script>
+
+    <!-- graphs: -->
+    <script src="./slide.js"></script>
+
+    <style>
+      /* colours, from presentations/assets/scripts/style.css: */
+      :root {
+        --bg: rgb(253, 253, 253);
+        --primary: rgb(60, 60, 60);
+        --secondary: rgb(120, 120, 120);
+        --tertiary: rgb(240, 240, 240);
+        --pink: rgb(214, 32, 91);
+      }
+
+      html {
+        background-color: var(--bg);
+        font-size: 18px;
+        text-wrap: pretty;
+      }
+      body {
+        margin: 0;
+        padding: 0 16px;
+        background-color: var(--bg);
+      }
+
+      h1,
+      h3,
+      p,
+      figcaption {
+        text-transform: lowercase;
+        max-width: 75%;
+        font-family: "alegreya", "Alegreya", serif;
+        color: var(--primary);
+      }
+      h1 {
+        font-weight: 600;
+        font-size: 2rem;
+        line-height: 1.3em;
+      }
+      h3 {
+        font-weight: 500;
+        font-size: 1.3rem;
+        margin: 0 0 0.5em;
+      }
+      .grey {
+        color: var(--secondary);
+        opacity: 70%;
+      }
+      figcaption {
+        font-family: "alegreya-sans", "Alegreya Sans", sans-serif;
+        color: var(--secondary);
+        font-weight: 400;
+        font-size: 0.8rem;
+        line-height: 1.4em;
+        border-left: 0.25em solid var(--secondary);
+        padding-left: 0.6em;
+        margin: 0.5em 0 0;
+      }
+      hr {
+        all: unset;
+        display: block;
+        height: 2px;
+        background-color: var(--tertiary);
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      /* each graph is a 16:9 slide: */
+      .title,
+      .slide {
+        max-width: 1100px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      .title {
+        padding: 3em 0 1em;
+      }
+      .slide {
+        aspect-ratio: 16 / 9;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 2em 0;
+      }
+      .slide svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+      }
+
+      /* graph marks: */
+      .line {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 2;
+        stroke-linejoin: round;
+      }
+      .band {
+        fill: var(--secondary);
+        opacity: 0.18; /* see-through, so gridlines show beneath. */
+      }
+      .axis {
+        stroke: var(--secondary);
+        stroke-width: 1;
+        opacity: 0.5;
+      }
+      .grid {
+        stroke: var(--tertiary);
+        stroke-width: 1;
+      }
+      .tick,
+      .label {
+        font-family: "alegreya-sans", "Alegreya Sans", sans-serif;
+        font-size: 15px;
+        fill: var(--secondary);
+      }
+      .label.italic {
+        font-style: italic;
+      }
+      .bar {
+        fill: var(--secondary);
+        opacity: 0.7;
+      }
+      .bar.pink {
+        fill: var(--pink);
+        opacity: 1;
+      }
+      text.pink {
+        fill: var(--pink);
+      }
+
+      @media (max-width: 700px) {
+        .slide {
+          aspect-ratio: auto;
+        }
+        h1,
+        h3,
+        p,
+        figcaption {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="title">
+      <h1>base-system:</h1>
+      <p class="grey" id="world"></p>
+      <p class="grey" id="status"></p>
+    </div>
+
+    <hr />
+
+    <section class="slide" id="busyness">
+      <h3>busyness, over age:</h3>
+      <svg role="img" aria-label="busyness over age"></svg>
+      <figcaption>
+        a gaussian (a bell-curve) peaking at 25 (σ 10), between 2 & 12 places a day. the noise around it is narrow at the peak
+        (σ 1.25) & wide away from it (up to 4.75): so, a busy 60-year-old is unlikely, but possible.
+      </figcaption>
+    </section>
+
+    <hr />
+
+    <section class="slide" id="energy">
+      <h3>energy, over age:</h3>
+      <svg role="img" aria-label="energy over age"></svg>
+      <figcaption>
+        two logistic (s-shaped) curves, multiplied: one rising through childhood (centred on 12), one falling through middle-age (centred on 50); above a floor of a fifth. so: a
+        plateau through the 20s & 30s, about 60% of it at 50, & nearly the floor by 80; never quite nothing. each being's vigor (log-normal: e^gaussian(0, 0.2)) scales it: the range.
+      </figcaption>
+    </section>
+
+    <hr />
+
+    <section class="slide" id="death">
+      <h3>probability of dying, over age:</h3>
+      <svg role="img" aria-label="probability of dying per day, over age"></svg>
+      <figcaption>
+        a cubic curve (age³) above a small floor: 0.0002 + 0.12 · (age / 100)³, a day (& a day is a year). about 0.1% a day at 20, 1.5% at 50, 6% at 80, & 12% at 100. each being's
+        frailty, (1 / vigor)², scales it: the range. so, the frail die sooner, & the vigorous later (the same vigor that gives them more energy).
+      </figcaption>
+    </section>
+
+    <hr />
+
+    <section class="slide" id="movement">
+      <h3>movement, over a being's day:</h3>
+      <svg role="img" aria-label="pixels travelled in each hour of a being's day"></svg>
+      <figcaption>
+        no equation: it emerges from the schedule. a being frequents a loop of places, each picked near the last (likelihood: e^(−distance / range)); every day, it goes round the
+        loop, staying a while at each. its day opens with the trip from the loop's last place (where its last day ended) back to the first. spare time is shared out at random, so
+        trips spread across the day; its last stay runs into the next day. measured over every hour of a being's own day, for beings aged 2 & over; most hours are spent staying,
+        so the range starts at 0. <span class="measured"></span>
+      </figcaption>
+    </section>
+
+    <hr />
+
+    <section class="slide" id="population">
+      <h3>population, with births & deaths:</h3>
+      <svg role="img" aria-label="population, births and deaths per day"></svg>
+      <figcaption>
+        a feedback-loop around a set-point. once a day, at a random hour, each being may die by a cubic hazard: (0.0002 + 0.12 · (age / 100)³) × (1 / vigor)²; but only while the
+        world is above 95% of its size. whenever it's below its size, neighbouring pairs of 18–45-year-olds may have a child (one per pair, per round). so, it hovers at its size:
+        every death is soon a birth (so, the range within a day is a sliver). <span class="measured"></span>
+      </figcaption>
+    </section>
+  </body>
+</html>

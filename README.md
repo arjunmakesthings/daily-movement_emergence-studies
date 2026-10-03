@@ -11,7 +11,7 @@ there is a <mark>world</mark>. the world is a container, and consists of many <m
 
 the world contains a <mark>population</mark> of <mark>beings</mark> — who are born, sustained, and killed over <mark>time</mark> by the world.
 
-the beings express life through <mark>movement</mark>, and movement is governed by a <mark>schedule</mark>. each being has a <mark>home</mark>; its day starts & ends there, and in between, it travels to a few (mostly nearby) places, and <mark>stays</mark> at each for a while — like we do. both the schedule & movement are governed by age (for eg: the closer you are to your 20s, the more likely you are to have a busier schedule (and thereby have to move more)).
+the beings express life through <mark>movement</mark>, and movement is governed by a <mark>schedule</mark>. each being frequents a few (mostly nearby) places: every day, it travels between them, and <mark>stays</mark> at each for a while — like we do. when a being makes a new schedule, the places it frequents can change. both the schedule & movement are governed by age (for eg: the closer you are to your 20s, the more likely you are to have a busier schedule (and thereby have to move more)).
 
 age also shapes a being's <mark>energy</mark> (it rises through childhood, peaks in the 20s & 30s, and declines with age), and energy is how fast a being moves — so, how much of its schedule a day allows. some beings simply have more <mark>vigor</mark> than others: more energy, and longer lives. nothing is exact; there is noise everywhere — so a 60 year old may well be busier than a 23 year old. it is just not likely. 
 
@@ -39,7 +39,7 @@ an interpretation can be written by doing the following:
         * w: (int) width of the world. 
         * h: (int) height of the world.
         * n: (int) initial population (default: 4).
-        * d: (int) day-length, in hours (default: 24) -> can be accessed via `world.day_length`. an hour is 60 frames.
+        * d: (int) day-length, in seconds (default: 24) -> can be accessed via `world.day_length`. a day is always 24 hours (as we know them), & beings live it the same way in every world; d only sets how long it lasts on screen (d × 60 frames). so, with d = 24, an hour lasts ~1 second; a smaller d plays the same day faster (beings move faster on screen), a larger d slower. the world keeps its time of day as `world.clock` (float: hours, 0–24).
         * m: (int) max-mass, i.e. the largest a being can be drawn (default: 10) -> can be accessed via `world.max_mass`. it only changes size, not speed.
         * db: (bool) debug-mode (default: false).
 
@@ -47,7 +47,7 @@ an interpretation can be written by doing the following:
 
 - run the world with `world.run()`. 
 
-- the world keeps time: `world.time` => the hour of the day (int); `world.clock` => the time of day, in hours (float).
+- the world keeps time: `world.time` => the hour of the day, on a 24-hour clock (int: 0–23).
 
 - `world.places` gives you a list of all places in the world, each with `.pos` (p5.Vector) & `.crowd` (int: how many beings are staying there).
 
@@ -56,10 +56,9 @@ an interpretation can be written by doing the following:
     - `.pos` => p5.Vector
     - `.mass` => float
     - `.energy` => float
-    - `.state` => `"travelling"` or `"staying"`
-    - `.place` => the place it's travelling to, or staying at
-    - `.home` => its home (a place)
-    - `.busyness` => int: how many places it wishes to be at in a day (incl. home)
+    - `.destination` => p5.Vector: where it's travelling to, or staying at (`null` until it first moves, at age 2)
+    - `.busyness` => int: how many places it wishes to be at in a day
+    - `.schedule` => its day, as time-slots: `[[start, end], ...]`, in hours on a 24-hour clock (int: 0–23, rounded down; like `world.time`). in each slot, it travels to a place, & stays there till the slot ends.
     - `.get_speed()` => float: pixels per frame
 
 - beings are also capable of getting their neighbours with `.get_neighbours ([radius = world.max_mass * 2, beings = world.beings])` => returns an array of beings.

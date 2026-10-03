@@ -1,5 +1,5 @@
 /*
-interpretation #1.6: born in pairs.
+interpretation #1: born in pairs.
 
 thought: 
 beings are destined to be with someone that they were born close to (in proximity & age). however, as they live out their lives, they may be close or separated in the world. thought is borrowed from the red thread of fate.
@@ -7,11 +7,11 @@ beings are destined to be with someone that they were born close to (in proximit
 (ideology borrowed from: red thread of fate -> https://en.wikipedia.org/wiki/Red_thread_of_fate.)
 
 expression:
-at the start, chain all beings, each to the one born closest to it (in proximity & age, weighed equally: distance across the world, & age gap across a lifetime), and pair them off along the chain. for two of these pairs, draw a bundle of red lines between the pair, every frame, over time (nothing is cleared). the closer they are to each other, the more red lines are drawn (2-10), & the stronger they are (in colour, thickness and density). past half the world's width apart, the thread stays at its thinnest; it never breaks. when one of the pair dies, their thread ends.
+draw a set of red lines between two beings that are 'destined' to be together, over time. the closer they are to each other in space, the more red lines are drawn & the stronger they are (in color & density). 
 
 parameters:
-population = 4 (shown);
-day length = 10;
+population = 4 (shown). 
+day length = 48;
 
 # 261002.
 */
@@ -29,10 +29,12 @@ let pairs = [];
 let diagonal = 0;
 // const sw = 0.1;
 
+const show_population = 4; 
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   //accepts the following: (width, height, [population, day_length, max_mass, debug_mode])
-  world = new World(width, height, 200, 10);
+  world = new World(width, height, 200, 48);
   world.initialize();
 
   //sort beings by how close they were born (proximity & age):
@@ -110,7 +112,7 @@ function draw() {
   const alive = new Set(world.beings);
 
   // background(190);
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < show_population; i++) {
     const a = pairs[i][0];
     const b = pairs[i][1];
 

@@ -8,8 +8,7 @@ expression:
 treat the position of each being as a vertex. generate a triangular-mesh by finding tuples close to each other, so that no point is inside a face. keep generating the mesh over time, as beings move.
 
 parameters: 
-population: 1000
-day-length: 5
+population: 1000.
 
 24th july, 2026.
 */
@@ -21,7 +20,7 @@ let sorted = [];
 function setup() {
   createCanvas(windowWidth, windowHeight);
   //accepts the following: (width, height, [population, day_length, debug_mode])
-  world = new World(width, height, 1000, 5);
+  world = new World(width, height, 1000);
   world.initialize();
   background(255);
 

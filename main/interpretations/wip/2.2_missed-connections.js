@@ -20,7 +20,7 @@ let world;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   //accepts the following: (width, height, [population, day_length, max_mass, debug_mode ])
-  world = new World(width, height, 1000, 10, 4);
+  world = new World(width, height, 1000, 48, 6);
   world.initialize();
 
   background(255);

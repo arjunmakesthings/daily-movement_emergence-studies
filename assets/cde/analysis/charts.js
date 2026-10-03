@@ -62,7 +62,7 @@ function chart_card(container, title, subtitle) {
 
 function data_table(card, columns, rows) {
   const details = make("details", {}, card);
-  text_node("summary", "show data", {}, details);
+  text_node("summary", "data:", {}, details);
   const table = make("table", { class: "data" }, details);
   const head = make("tr", {}, make("thead", {}, table));
   for (const c of columns) text_node("th", c, {}, head);
@@ -109,27 +109,29 @@ function band_path(points, x, y, lo, hi) {
 }
 
 /*
-series: [{ name, color: css var, points: [{ x, p5, p25, p50, p75, p95 }] }]
+series: [{ name, color: css var, dashed?, bands?, points: [{ x, p5, p25, p50, p75, p95 }] }]
+a series has bands unless the chart (opts.bands) or the series itself says false.
 */
 function band_chart(container, opts) {
-  const { title, subtitle, series, x_label, y_label, y_format = (v) => String(v) } = opts;
+  const { title, subtitle, x_label, y_label, y_format = (v) => String(v) } = opts;
+  const series = opts.series.map((s) => ({ ...s, bands: opts.bands !== false && s.bands !== false }));
   const { card, body } = chart_card(container, title, subtitle);
 
-  const all = series.flatMap((s) => s.points);
-  const x_domain = opts.x_domain || [Math.min(...all.map((p) => p.x)), Math.max(...all.map((p) => p.x))];
-  const y_max = Math.max(...all.map((p) => (opts.bands === false ? p.p50 : p.p95)));
-  const y_domain = opts.y_domain || [0, nice_top(y_max)];
+  const all = series.flatMap((s) => s.points.map((p) => (s.bands ? p.p95 : p.p50)));
+  const xs = series.flatMap((s) => s.points.map((p) => p.x));
+  const x_domain = opts.x_domain || [Math.min(...xs), Math.max(...xs)];
+  const y_domain = opts.y_domain || [0, nice_top(Math.max(...all))];
 
   const svg = make("svg:svg", { viewBox: `0 0 ${CHART.w} ${CHART.h}`, class: "chart", role: "img", "aria-label": title }, body);
   const { x, y } = frame(svg, x_domain, y_domain, x_label, y_label, y_format);
 
   for (const s of series) {
     const g = make("svg:g", { style: `--c: var(${s.color})` }, svg);
-    if (opts.bands !== false) {
+    if (s.bands) {
       make("svg:path", { d: band_path(s.points, x, y, "p5", "p95"), class: "band outer" }, g);
       make("svg:path", { d: band_path(s.points, x, y, "p25", "p75"), class: "band inner" }, g);
     }
-    make("svg:path", { d: path_of(s.points, x, y, "p50"), class: "median" }, g);
+    make("svg:path", { d: path_of(s.points, x, y, "p50"), class: "median" + (s.dashed ? " dashed" : "") }, g);
 
     //direct label at the line's end (with the legend, for 2+ series):
     if (series.length > 1) {
@@ -140,21 +142,21 @@ function band_chart(container, opts) {
   }
 
   if (series.length > 1) legend(card, series, "line");
-  hover_crosshair(svg, body, series, x, y, x_domain, x_label, y_format, opts.bands !== false);
+  hover_crosshair(svg, body, series, x, y, x_domain, x_label, y_format);
 
+  //rows at every table_step of x, from all series (they may start at different x's):
+  const table_xs = [...new Set(xs)].sort((a, b) => a - b).filter((v) => v % (opts.table_step || 10) === 0);
   data_table(
     card,
-    [x_label, ...series.flatMap((s) => (opts.bands === false ? [s.name] : [s.name + " median", s.name + " 5–95%"]))],
-    series[0].points
-      .filter((p) => p.x % (opts.table_step || 10) === 0)
-      .map((p) => [
-        String(p.x),
-        ...series.flatMap((s) => {
-          const q = s.points.find((o) => o.x === p.x);
-          if (!q) return opts.bands === false ? ["–"] : ["–", "–"]; //this series has no value here.
-          return opts.bands === false ? [y_format(q.p50)] : [y_format(q.p50), y_format(q.p5) + " – " + y_format(q.p95)];
-        }),
-      ]),
+    [x_label, ...series.flatMap((s) => (s.bands ? [s.name + " median", s.name + " 5–95%"] : [s.name]))],
+    table_xs.map((v) => [
+      String(v),
+      ...series.flatMap((s) => {
+        const q = s.points.find((o) => o.x === v);
+        if (!q) return s.bands ? ["–", "–"] : ["–"]; //this series has no value here.
+        return s.bands ? [y_format(q.p50), y_format(q.p5) + " – " + y_format(q.p95)] : [y_format(q.p50)];
+      }),
+    ]),
   );
 }
 
@@ -163,7 +165,7 @@ function legend(card, series, kind) {
   card.insertBefore(row, card.querySelector(".chart-body"));
   for (const s of series) {
     const item = make("span", { class: "legend-item" }, row);
-    make("span", { class: "key " + kind, style: `--c: var(${s.color})` }, item);
+    make("span", { class: "key " + kind + (s.dashed ? " dashed" : ""), style: `--c: var(${s.color})` }, item);
     text_node("span", s.name, {}, item);
   }
 }
@@ -171,10 +173,10 @@ function legend(card, series, kind) {
 /*
 a vertical hairline that snaps to the nearest x, with every series' value in one readout.
 */
-function hover_crosshair(svg, body, series, x, y, x_domain, x_label, y_format, bands) {
+function hover_crosshair(svg, body, series, x, y, x_domain, x_label, y_format) {
   const line = make("svg:line", { class: "crosshair", y1: CHART.top, y2: CHART.h - CHART.bottom, visibility: "hidden" }, svg);
   const tip = make("div", { class: "tooltip", hidden: "" }, body);
-  const xs = series[0].points.map((p) => p.x);
+  const xs = [...new Set(series.flatMap((s) => s.points.map((p) => p.x)))];
 
   svg.addEventListener("pointermove", (e) => {
     const box = svg.getBoundingClientRect();
@@ -191,9 +193,9 @@ function hover_crosshair(svg, body, series, x, y, x_domain, x_label, y_format, b
       const p = s.points.find((o) => o.x === nearest);
       if (!p) continue;
       const row = make("div", { class: "tip-row" }, tip);
-      make("span", { class: "key line", style: `--c: var(${s.color})` }, row);
+      make("span", { class: "key line" + (s.dashed ? " dashed" : ""), style: `--c: var(${s.color})` }, row);
       text_node("strong", y_format(p.p50), {}, row);
-      text_node("span", bands ? ` (${y_format(p.p25)}–${y_format(p.p75)}) ${s.name}` : " " + s.name, {}, row);
+      text_node("span", s.bands ? ` (${y_format(p.p25)}–${y_format(p.p75)}) ${s.name}` : " " + s.name, {}, row);
     }
     tip.hidden = false;
     const left = (x(nearest) / CHART.w) * box.width;
@@ -271,34 +273,43 @@ function scatter_chart(container, opts) {
 }
 
 /*
-rows: [{ name, expect, value, pass }]. status always comes with an icon & a word, never colour alone.
+columns: the systems' names. rows: [{ name, expect, results: [{ value, pass }] }], one result per column; pass is null when the check doesn't apply.
+status always comes with an icon & a word, never colour alone.
 */
-function checks_table(container, title, subtitle, rows) {
-  const { card, body } = chart_card(container, title, subtitle);
+function checks_table(container, title, subtitle, columns, rows) {
+  const { body } = chart_card(container, title, subtitle);
   const table = make("table", { class: "data checks" }, body);
   const head = make("tr", {}, make("thead", {}, table));
-  for (const c of ["", "check", "expected", "measured"]) text_node("th", c, {}, head);
+  for (const c of ["check", "expected", ...columns]) text_node("th", c, {}, head);
   const tb = make("tbody", {}, table);
   for (const r of rows) {
     const tr = make("tr", {}, tb);
-    const status = make("td", { class: "status " + (r.pass ? "good" : "critical") }, tr);
-    text_node("span", r.pass ? "✓ pass" : "✕ fail", {}, status);
     text_node("td", r.name, {}, tr);
     text_node("td", r.expect, {}, tr);
-    text_node("td", r.value, {}, tr);
+    for (const { value, pass } of r.results) {
+      const td = make("td", { class: "result" }, tr);
+      const [kind, word] = pass === null ? ["na", "– n/a"] : pass ? ["good", "✓ pass"] : ["critical", "✕ fail"];
+      text_node("div", word, { class: "status " + kind }, td);
+      text_node("div", value, {}, td);
+    }
   }
 }
 
 /*
-rows: [[label, value], ...]
+rows: [[label, value, ...], ...]; columns (optional): a header, one for each value.
 */
-function odds_table(container, title, subtitle, rows) {
+function odds_table(container, title, subtitle, rows, columns = null) {
   const { body } = chart_card(container, title, subtitle);
   const table = make("table", { class: "data odds" }, body);
+  if (columns) {
+    const head = make("tr", {}, make("thead", {}, table));
+    text_node("th", "", {}, head);
+    for (const c of columns) text_node("th", c, { class: "num" }, head);
+  }
   const tb = make("tbody", {}, table);
-  for (const [label, value] of rows) {
+  for (const [label, ...values] of rows) {
     const tr = make("tr", {}, tb);
     text_node("td", label, {}, tr);
-    text_node("td", value, { class: "num" }, tr);
+    for (const v of values) text_node("td", v, { class: "num" }, tr);
   }
 }
