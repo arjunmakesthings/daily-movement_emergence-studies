@@ -17,7 +17,8 @@ my working notes on `daily-movement_emergence-studies`, on branch `cde`. they st
 ## layout
 
 ```
-index.html                     # loads p5, system, and one interpretation (currently .debug.js)
+index.html                     # loads p5, system, and one interpretation (currently .debug.js); has a commented-out toggle for the old system
+for-talk.html                  # the same, set up for the talk (currently loads 5_the-collective-fabric-of-age-&-experience.js)
 assets/scripts/                # p5.min.js (v1.11), delaunator.min.js, save.js (all gitignored)
 assets/cde/README.md           # these notes
 assets/cde/analysis/           # analysis pages (see below)
@@ -25,19 +26,17 @@ assets/cde/analysis/           # analysis pages (see below)
   slide.html, slide.js                 # five graphs of the new system, for a slide
 main/system/world.js           # World class
 main/system/being.js           # Being class
-main/system/old/               # the user's original system (= commit 92035c4), untracked; kept for comparison
-main/interpretations/          # finished ("happy with") interpretations
-  .debug.js                    # debug-mode world (user tests with: 500, 5, 10, true)
+main/system/old/               # the user's original system (= commit 92035c4); kept for comparison
+main/interpretations/          # the current interpretation of each idea, numbered by idea (the user reorganised it on 3rd october)
+  .debug.js                    # debug-mode world (user tests with: 500, 48, 15, true)
   .template.js                 # starter for new interpretations
-  .ideas.txt                   # idea list
-  1.5_born-in-pairs.js
-  1.6_born-in-pairs.js         # compare with 1.5
-  2.0_missed-connections.js
-  2.2_missed-connections.js    # compare with 2.0 (2.1 is taken in wip/)
-  3.0_all-the-world's-a-mesh.js   # inlines its own copy of delaunator
-  4.1_meetings-are-ripples.js
-  4.2_meetings-are-ripples.js  # compare with 4.1
-  wip/                         # earlier/alternate versions (1.1, 1.3, 1.4, 2.1, 4.0)
+  1_born-in-pairs.js           # world: 200, 48
+  2_missed-connections.js      # world: 1000, 48, 6
+  3_all-the-world's-a-mesh.js  # world: 1000 (inlines its own copy of delaunator)
+  4_meetings-are-ripples.js    # world: 500, 48, 20
+  5_the-collective-fabric-of-age-&-experience.js   # world: 1000, 48 (its header still says #5.1)
+  new/                         # empty, for now
+  wip/                         # every earlier / alternate version: 1.1, 1.3, 1.4, 1.5, 2.0, 2.1, 3.0, 4.0, 4.1, 4.2, 5.1; and .ideas.txt
 trials/                        # scratch experiments (curve tests, discarded functions, shader attempts)
 paper/                         # 260806_software-study.pdf + references (wolfram, bar-yam, reas links)
 ```
@@ -219,57 +218,32 @@ for headless testing i run the pages in node with a p5 stand-in and a tiny fake 
 
 ---
 
-## interpretations (the "happy with" set)
+## interpretations
 
-| # | title | world params `(pop, day, max_mass)` | what's drawn |
+on 3rd october the user reorganised `main/interpretations/`: the current version of each idea is now `<number>_<title>.js` (its header says `#<number>`), and every earlier version is in `wip/` (with its decimal number: 1.5, 4.2, …). the user tunes the current ones by hand, and tests them visually (no headless tests).
+
+| file | title | world `(pop, day_length, max_mass)` | what's drawn |
 |---|---|---|---|
-| 1.5 | born in pairs | 200, 10 | red thread of fate. beings are paired at setup by greedy nearest-neighbour chaining (ties broken by age). only the **first 2 pairs** are drawn: bundles of red lines in HSL, where closer pairs get more, thicker and more saturated lines, with noise jitter. it accumulates (no background clear). |
-| 2.0 | missed connections | 1000, 10, 4 | each being draws lines to neighbours within `3 * mass`. stroke weight goes from 1 to 0.1 with distance. the background is cleared every frame. |
-| 3.0 | all the world's a mesh | 1000, 5 | a delaunay triangulation of all being positions every frame. triangles alternate fill (white, alpha = closeness) and stroke colour. it accumulates. |
-| 4.1 | meetings are ripples | 500, 10, 30 | faint black lines between neighbours on a black background. "meetings" spawn jittered point-circle ripples (at most 100, deduplicated within 20px). a closer meeting gives a larger max radius. ripples grow 1px a frame and fade. |
+| `1_` | born in pairs | 200, 48 | red thread of fate. beings are paired at setup by proximity & age. only the **first 2 pairs** are drawn (on purpose: population 200, 4 shown): bundles of red lines in HSL, closer pairs with more, thicker, more saturated lines, with noise jitter; accumulating. (built on 1.6: pairs by proximity & age, a thread that never breaks, and ends when one of the pair dies.) |
+| `2_` | missed connections | 1000, 48, 6 | on white, cleared every frame: a line from each being to its neighbours within `3 × mass`, **only while one of the two is travelling** (reads the internal `state`); the closer, the thicker. (built on 2.2.) |
+| `3_` | all the world's a mesh | 1000 (default day length 24) | a delaunay triangulation of all being positions, every frame; accumulating. |
+| `4_` | meetings are ripples | 500, 48, 20 | on black, never cleared: **only moving beings** (`state === "travelling"`) draw a faint black line to one close neighbour (changed 3rd october; reads the internal `state`, which the readme doesn't list). a meeting (coming close until parting) sends one ripple of jittered white points at its closest moment; closer meetings go further; at most 100, none within 20px of another. (built on 4.2.) |
+| `5_` | the collective fabric of age & experience | 1000, 48 | see below. |
 
-### new versions (2nd october 2026), made after the system rework, to compare with the originals
-
-each one keeps the user's thought unchanged and has a rewritten expression. all three are in `index.html` as commented-out lines under their originals.
-
-- **1.6 born in pairs** (vs 1.5):
-  - pairs are chained by **proximity and age**, weighed equally (`apartness` = distance / world diagonal + age gap / 100). 1.5 used age only to break exact ties, which never happen. the median age gap within a pair went from 16 to 3.
-  - the thread **never breaks**: line count, stroke weight, saturation and lightness are clamped. in 1.5, pairs more than half the width apart drew nothing, because the line count went negative.
-  - a thread **ends when one of the pair dies**. 1.5 kept drawing to the dead being's last spot.
-- **2.2 missed connections** (vs 2.0):
-  - lines are drawn only when **at least one of the two is travelling** (it reads `state`), since the thought is about walking past people, and in the new system beings stay together at places. that's about 970 lines a frame vs about 2,300.
-  - fixed an undeclared `neighbour` variable.
-- **4.2 meetings are ripples** (vs 4.1):
-  - a meeting is an **encounter**, from coming close (within 2× max mass) to parting, tracked per pair with ids held in a `WeakMap`.
-  - each meeting sends **one** ripple at its **closest moment**: when they start drifting apart by more than 0.5px, or haven't got closer for 10 frames. its size still follows how close they came.
-  - one chance only: if the cap is full, the meeting passes without a ripple. waiting for room would favour long meetings over passings.
-  - in 4.1, crowds standing together set off ripples continuously. ripples with a moving being at their centre went from 37% to 46%.
-  - `&` → `&&`.
-- **3.0:** no new version; it already meets its thought.
-
-how they were tested: headless node runs with p5 drawing calls stubbed out, counting lines and ripples and checking pairs. **they haven't been looked at in a browser by me**, and haven't been re-run since home was removed (none of them read `home` or `place`). the user is now editing interpretations by hand (e.g. 1.6's world is now `8` beings, day length `48*2`; it still draws only the first 2 pairs, as in 1.5).
-
----
+**5 (made 3rd october, as 5.1: ageing; renamed by the user):** each being is a polygon around its position. its nodes sit on a smooth form of its own (a closed loop of 3d noise), which drifts as the being ages (`form_drift`, continuous through the day); each node also wanders a little off it (`node_wander`, `node_wander_speed`). a polygon starts as a triangle, and gains 1–4 nodes a day (a day is a year) at random moments, in the widest gaps (wider gaps likelier): so the young are sharp and the old fluid (~250 nodes at 100). size = `mass × shape_size × size_by_age(age) × impact`, where `size_by_age` goes 0.4 → 1.2 over 0–100 and `impact` is a log-normal of the being's own (`impact_spread`): older beings are likely bigger, but some young ones are big and some old ones small. line colour: the younger, the darker; the older, the whiter (0 → black, 100+ → white). drawn every frame, never cleared. the knobs are lowercase constants at the top of the file. the user has since been editing it (the current header says "the collective fabric of age & experience"; a copy as 5.1 is in `wip/`).
 
 ## where we left off (3rd october 2026)
 
-- **done (committed, up to `f59eaec`):** the base simulation rework, the analysis tool, project readme updates, interpretations 1.6, 2.2 and 4.2.
-- **done (not committed):**
-  - **day length is playback speed**: a day is always 24 hours (`world.day_hours`), and beings live it the same way in every world; `day_length` sets how many seconds it lasts (`day_frames = day_length × 60`, `hour_length = day_frames / 24`). `world.time` is the hour (0–23), `world.clock` the time in hours (0–24), `.schedule` in whole hours; busyness is the user's unscaled 2–12; `min_stay` is 1 hour. the analysis pages follow it. files: `main/system/world.js`, `main/system/being.js`, `README.md`, `assets/cde/analysis/*`.
-  - **home removed**: routines are loops of frequented places, started from where the being is; `destination` is the position (p5.Vector) of the place a being is heading for or staying at, as in the original system; the place itself is `place`, internal. `schedule` is now exposed; the debug log prints the exposed list. files: `main/system/being.js`, `main/system/world.js`, `README.md` (system paragraph & property list: no `.state`, no `.home`, `.destination` as a p5.Vector, `.schedule` in 24-hour hours, `world.time` on a 24-hour clock, `world.clock` explained with `d`, busyness without "incl. home").
-  - the analysis page compares the new system with the old (`assets/cde/analysis/{index.html, analysis.js, charts.js}`; the user changed one label in `charts.js`: "show data" → "data:").
-  - the slide page (`assets/cde/analysis/slide.html`, `slide.js`).
-  - these notes.
-  - the user's own changes: `index.html` (debug world active, old-system toggle) and the untracked `main/system/old/`.
-- **checked headlessly only:** both analysis pages run end to end in node; the debug world (`show()`, `show_debugs()`) runs with drawing stubbed. **not yet looked at in a browser by me.**
+- **committed (up to `71e3378`, "get stuff ready."):** everything so far: the base system (no home; day length as playback speed; 24-hour `world.time` & `.schedule`; `destination` as a p5.Vector), the readmes, the analysis pages, `main/system/old/`, the reorganised interpretations (`1_`–`5_` and `wip/`), and `for-talk.html`. the working tree was clean then.
+- **since that commit:** only these notes (and possibly the user's own edits).
+- **the base system:** the user is happy with it for now ("kind of okay"): to slow beings down, they raise `day_length`.
+- **checked headlessly only:** both analysis pages and the debug world run end to end in node. the analysis pages haven't been looked at in a browser by me. interpretations are tested visually by the user only.
 - **next likely steps:**
-  1. the user reworks the interpretations by hand (for the new day-length behaviour).
-  2. the user looks at `slide.html` and the analysis page in the browser.
-  3. hear the user's verdict on 1.6, 2.2 and 4.2: keep, adjust, or promote to "happy with".
-  4. decide the 4.x ripple cap and lifetime.
-  5. the open threads above.
-  6. maybe new interpretations that use the new system's data (`destination`, `schedule`, `busyness`, `world.places[i].crowd`, `world.time`).
-  7. commit when the user asks; `cde` is the current branch and `main` the main branch.
+  1. the user keeps tuning interpretations by hand (incl. 5), and preparing the talk (`for-talk.html`; the deck is `slides/261001_emergence-study_pcd26.html` in the presentations repo).
+  2. maybe list `.state` in the readme (2 and 4 rely on it), or not.
+  3. decide the 4.x ripple cap and lifetime.
+  4. the open threads above (e.g. beings stuck at one place getting "closer destinations").
+  5. commit when the user asks; `cde` is the current branch and `main` the main branch.
 - **headless testing setup** (it lives in the session scratchpad, so it's gone after a session; recreate it if needed):
   - load `world.js` and `being.js` in node with `vm.runInThisContext` (not a separate `vm` context: global lookups there are about 10× slower and skew timings).
   - stub p5: `createVector` with a small vector class (add, sub, mag, magSq, setMag, heading, copy, set, dist, div, mult, normalize, plus static sub, dist, add and mult), `constrain`, `random` (accepting an array or a range), `randomGaussian`, `shuffle`, `PI`, `sqrt`, `cos`, `sin`, `noStroke`, `createCanvas`/`resizeCanvas` (setting `width`/`height`), `p5.Vector`. drive `frameCount` yourself.
