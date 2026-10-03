@@ -1,6 +1,6 @@
 # cde: project context
 
-my working notes on `daily-movement_emergence-studies`, on branch `cde`. they started from the project readme and the code at commit `92035c4`, and now describe the base simulation after the rework, the interpretation versions, and the analysis pages. the rework, the analysis tool and 1.6 / 2.2 / 4.2 are committed (up to `f59eaec`); everything from 2nd october 2026 onwards is **not committed yet** (see "where we left off" at the bottom).
+my working notes on `daily-movement_emergence-studies`, on branch `cde`. they started from the project readme and the code at commit `92035c4`, and now describe the base simulation after the rework, the interpretation versions, and the analysis pages. everything up to interpretation 6 / 6.1 is committed (up to `f160b36`, "add separation."); see "where we left off" at the bottom for what isn't.
 
 ---
 
@@ -17,8 +17,8 @@ my working notes on `daily-movement_emergence-studies`, on branch `cde`. they st
 ## layout
 
 ```
-index.html                     # loads p5, system, and one interpretation (currently .debug.js); has a commented-out toggle for the old system
-for-talk.html                  # the same, set up for the talk (currently loads 5_the-collective-fabric-of-age-&-experience.js)
+index.html                     # loads p5, system, and one interpretation; lists the current ones (.debug, 1_–6_), all commented out right now; has a commented-out toggle for the old system. (it took over from for-talk.html, which the user deleted on 3rd october.)
+old-index.html                 # the previous index.html, listing the old decimal-numbered files (untracked; those paths are now in wip/)
 assets/scripts/                # p5.min.js (v1.11), delaunator.min.js, save.js (all gitignored)
 assets/cde/README.md           # these notes
 assets/cde/analysis/           # analysis pages (see below)
@@ -35,6 +35,8 @@ main/interpretations/          # the current interpretation of each idea, number
   3_all-the-world's-a-mesh.js  # world: 1000 (inlines its own copy of delaunator)
   4_meetings-are-ripples.js    # world: 500, 48, 20
   5_the-collective-fabric-of-age-&-experience.js   # world: 1000, 48 (its header still says #5.1)
+  6_separation.js              # world: 500, 48
+  6.1_separation.js            # world: 500, 48 (a second take on 6, kept beside it; not in index.html)
   new/                         # empty, for now
   wip/                         # every earlier / alternate version: 1.1, 1.3, 1.4, 1.5, 2.0, 2.1, 3.0, 4.0, 4.1, 4.2, 5.1; and .ideas.txt
 trials/                        # scratch experiments (curve tests, discarded functions, shader attempts)
@@ -198,7 +200,10 @@ for headless testing i run the pages in node with a p5 stand-in and a tiny fake 
 - movement must look **calm and free-flowing**. no jarring speed, and no everyone-moves-at-once moments.
 - **noise is intended**: unlikely things (a busy 60-year-old) must be possible, just not likely. graphs should show the range, not just the average.
 - births on the road are fine. children not going out much is fine. travelling share as it is is fine.
-- **an interpretation's "thought" is always the user's; never edit it.** when changing an interpretation, rewrite its "expression" (the technical implementation) so it describes exactly what the code does. make a new version file (e.g. 1.5 → 1.6) so the two can be compared, and leave the original alone.
+- **an interpretation's "thought" is always the user's; never edit it** (leave it as a `//` placeholder until they write it). when changing an interpretation, rewrite its "expression" (the technical implementation) so it describes exactly what the code does.
+- **change interpretation files in place** (said on 3rd october, replacing the earlier "make a new version file" rule). a new version file only when the user asks for one (e.g. "make another 6.1").
+- the user tweaks knobs in the files between requests (and sometimes un/comments `background`): always re-read a file before editing it, and keep their values.
+- **expose knobs** as lowercase constants at the top of an interpretation, with a comment saying what raising / lowering does (e.g. `weight_mult`).
 - for anything presentation-like, follow their `style.css` (presentations repo): simple, greys + pink, alegreya. graphs need gridlines, a key, and captions that say what kind of curve it is (e.g. "asymptotic growth").
 - when testing or describing, say plainly what was and wasn't checked (e.g. headless node runs vs. a browser).
 
@@ -229,18 +234,36 @@ on 3rd october the user reorganised `main/interpretations/`: the current version
 | `3_` | all the world's a mesh | 1000 (default day length 24) | a delaunay triangulation of all being positions, every frame; accumulating. |
 | `4_` | meetings are ripples | 500, 48, 20 | on black, never cleared: **only moving beings** (`state === "travelling"`) draw a faint black line to one close neighbour (changed 3rd october; reads the internal `state`, which the readme doesn't list). a meeting (coming close until parting) sends one ripple of jittered white points at its closest moment; closer meetings go further; at most 100, none within 20px of another. (built on 4.2.) |
 | `5_` | the collective fabric of age & experience | 1000, 48 | see below. |
+| `6_` | separation | 500, 48 | see below. |
+| `6.1_` | separation (spikes) | 500, 48 | see below. |
 
 **5 (made 3rd october, as 5.1: ageing; renamed by the user):** each being is a polygon around its position. its nodes sit on a smooth form of its own (a closed loop of 3d noise), which drifts as the being ages (`form_drift`, continuous through the day); each node also wanders a little off it (`node_wander`, `node_wander_speed`). a polygon starts as a triangle, and gains 1–4 nodes a day (a day is a year) at random moments, in the widest gaps (wider gaps likelier): so the young are sharp and the old fluid (~250 nodes at 100). size = `mass × shape_size × size_by_age(age) × impact`, where `size_by_age` goes 0.4 → 1.2 over 0–100 and `impact` is a log-normal of the being's own (`impact_spread`): older beings are likely bigger, but some young ones are big and some old ones small. line colour: the younger, the darker; the older, the whiter (0 → black, 100+ → white). drawn every frame, never cleared. the knobs are lowercase constants at the top of the file. the user has since been editing it (the current header says "the collective fabric of age & experience"; a copy as 5.1 is in `wip/`).
 
+**6, separation (made 3rd october):** places separating themselves from the places around them. the thought is still a `//` placeholder (the user's to write). on white, never cleared:
+- each place's **surroundings** are its `neighbours_n` nearest places (worked out once, in setup).
+- every frame, the beings **staying** at a place (reads the internal `.state` & `.place`) are grouped by **side**: the surrounding place lying most in the direction from the place to the being.
+- per side, their directions (being → place) are averaged **as lines, not arrows** (doubled angles), so beings on opposite ends agree instead of cancelling.
+- each being on a side draws **its own line**, orthogonal to the side's average, halfway between the place & that surrounding place. so a bigger crowd on a side = more lines there, near & on top of each other.
+- each line is nudged by the being's own slowly drifting noise (`drift`): shifted along the gap (`shift`), tilted (`tilt`), & its own thickness (`weights`, scaled by `weight_mult`).
+- line length grows with the number of beings at the place (`line_lengths` from 1 being to `full_crowd`), as a share of the gap.
+- colour: each being is democrat blue or republican red (random, kept); darker at the central places, lighter towards the world's reach. alpha per line is fixed (`line_alpha`): strength comes from how many lines pile up.
+
+**6.1, separation (spikes; made 3rd october):** each staying being grows a **spike** (a triangle, as wide as its `mass`) towards the nearest being staying at each of its place's surrounding places. beings themselves aren't drawn.
+- each spike reaches a share of the way (`reach`, random per pair of beings, kept).
+- spikes don't pop: a spike **grows in** (length & opacity, smoothstep-eased) over `grow_frames`, **turns** gradually when its nearest being changes (`apex_ease`), and **fades out** where it last was when its being leaves or that place empties.
+- shade: each being cycles **smoothly black → white → black** (a cosine, so equal time near each end), at its own phase & pace (`shade_period`, ±25%). (it was noise, which sits mostly at mid-grey and read as too dark.)
+- `opacity` is a spike's opacity at full growth. the user accumulates (`background(255, 20)` fade is commented out right now). note: white spikes don't show on white, so the image still leans dark; a mid-grey background would fix that (offered, not taken up).
+
 ## where we left off (3rd october 2026)
 
-- **committed (up to `71e3378`, "get stuff ready."):** everything so far: the base system (no home; day length as playback speed; 24-hour `world.time` & `.schedule`; `destination` as a p5.Vector), the readmes, the analysis pages, `main/system/old/`, the reorganised interpretations (`1_`–`5_` and `wip/`), and `for-talk.html`. the working tree was clean then.
-- **since that commit:** only these notes (and possibly the user's own edits).
+- **committed (up to `f160b36`, "add separation."):** the base system (no home; day length as playback speed; 24-hour `world.time` & `.schedule`; `destination` as a p5.Vector), the readmes, the analysis pages, `main/system/old/`, the reorganised interpretations (`1_`–`5_` and `wip/`), and `6_` & `6.1_` as described above.
+- **not committed yet:** `for-talk.html` deleted, `index.html` reworked into the talk list, `old-index.html` added, and these notes.
+- **6 & 6.1:** checked only that they parse (`node --check`); the user tests them visually. 6.1 has no tag in `index.html` yet.
 - **the base system:** the user is happy with it for now ("kind of okay"): to slow beings down, they raise `day_length`.
 - **checked headlessly only:** both analysis pages and the debug world run end to end in node. the analysis pages haven't been looked at in a browser by me. interpretations are tested visually by the user only.
 - **next likely steps:**
-  1. the user keeps tuning interpretations by hand (incl. 5), and preparing the talk (`for-talk.html`; the deck is `slides/261001_emergence-study_pcd26.html` in the presentations repo).
-  2. maybe list `.state` in the readme (2 and 4 rely on it), or not.
+  1. the user keeps tuning interpretations by hand (incl. 5, 6, 6.1; 6's thought is still to be written), and preparing the talk (`index.html`; the deck is `slides/261001_emergence-study_pcd26.html` in the presentations repo).
+  2. maybe list `.state` (2, 4, 6, 6.1) & `.place` (6, 6.1) in the readme, or not.
   3. decide the 4.x ripple cap and lifetime.
   4. the open threads above (e.g. beings stuck at one place getting "closer destinations").
   5. commit when the user asks; `cde` is the current branch and `main` the main branch.
