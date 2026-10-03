@@ -1,16 +1,16 @@
 /*
-interpretation #2.2: missed connections.
+interpretation #2: missed connections.
 
 thought:
 we walk by so many people. when they are within a certain distance, we have a short window of time to connect with each other in physical-space, until we are distant again.
 
 expression:
-every frame (cleared each time), draw a line from each being to other beings around them within 3 times its mass, but only when at least one of the two is travelling: walking by, not staying together at a place. the closer they are, the thicker the line (1 to 0.1), signifying the intensity of a possible connection.
+draw a line from each being to other beings around them within a specific radius; while one of them is travelling. the closer they are, the thicker the line. 
 
 parameters:
 population: 1000,
-day_length: 10,
-max_mass: 4,
+day_length: 48,
+max_mass: 6,
 
 2nd october, 2026.
 */

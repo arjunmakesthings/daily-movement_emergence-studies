@@ -11,11 +11,9 @@ there is a <mark>world</mark>. the world is a container, and consists of many <m
 
 the world contains a <mark>population</mark> of <mark>beings</mark> — who are born, sustained, and killed over <mark>time</mark> by the world.
 
-the beings express life through <mark>movement</mark>, and movement is governed by a <mark>schedule</mark>. each being frequents a few (mostly nearby) places: every day, it travels between them, and <mark>stays</mark> at each for a while — like we do. when a being makes a new schedule, the places it frequents can change. both the schedule & movement are governed by age (for eg: the closer you are to your 20s, the more likely you are to have a busier schedule (and thereby have to move more)).
+the beings express life through <mark>movement</mark>, and movement is governed by a <mark>schedule</mark>. both the schedule & movement are governed by age (for eg: the closer you are to your 20s, the more likely you are to have a busier schedule (and thereby have to move more)).
 
-age also shapes a being's <mark>energy</mark> (it rises through childhood, peaks in the 20s & 30s, and declines with age), and energy is how fast a being moves — so, how much of its schedule a day allows. some beings simply have more <mark>vigor</mark> than others: more energy, and longer lives. nothing is exact; there is noise everywhere — so a 60 year old may well be busier than a 23 year old. it is just not likely. 
-
-what is, however, shown to a person is <strong>not</strong> a representation of the system, but <mark>software-interpretations</mark> of it — the artist (myself) decides what to show from the simulation. 
+what is, however, shown to a person is <strong>not</strong> the system, but <mark>software-interpretations</mark> of it — the artist (myself) decides what to show from the simulation. 
 
 ---
 
@@ -39,7 +37,7 @@ an interpretation can be written by doing the following:
         * w: (int) width of the world. 
         * h: (int) height of the world.
         * n: (int) initial population (default: 4).
-        * d: (int) day-length, in seconds (default: 24) -> can be accessed via `world.day_length`. a day is always 24 hours (as we know them), & beings live it the same way in every world; d only sets how long it lasts on screen (d × 60 frames). so, with d = 24, an hour lasts ~1 second; a smaller d plays the same day faster (beings move faster on screen), a larger d slower. the world keeps its time of day as `world.clock` (float: hours, 0–24).
+        * d: (int) day-length, in seconds (default: 24) -> can be accessed via `world.day_length`. a day is always 24 hours, & beings live it the same way in every world; d only sets how long it lasts on screen (d × 60 frames). so, with d = 24, an hour lasts ~1 second; a smaller d plays the same day faster (beings move faster on screen), a larger d slower. the world keeps its time of day as `world.clock` (float: hours, 0–24).
         * m: (int) max-mass, i.e. the largest a being can be drawn (default: 10) -> can be accessed via `world.max_mass`. it only changes size, not speed.
         * db: (bool) debug-mode (default: false).
 
