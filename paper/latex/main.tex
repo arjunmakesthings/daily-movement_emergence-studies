@@ -1,0 +1,60 @@
+% ============================================================
+% emergence-study: master version (no venue).
+%
+% this is the long, complete paper. each venue gets its own
+% thin wrapper later (venues/), which \input-s the same sections.
+% see README.md for how to compile & how to port.
+% ============================================================
+
+\documentclass[11pt]{article}
+
+% ---------- switches (true / false) ----------
+\newif\ifanonymous
+\anonymousfalse   % \anonymoustrue hides name, affiliation, acknowledgments & self-identifying links (for blind review).
+
+\newif\ifshownotes
+\shownotestrue    % \shownotesfalse hides every \note{} & \anecdote{} placeholder (for submission).
+
+\input{preamble}
+
+% ---------- title ----------
+\title{Software-Interpretations of an Everyday System:\\[0.2em]
+\large Emergence, Instruction, and the Artist as Reader}
+
+\ifanonymous
+  \author{Anonymous Author(s)}
+\else
+  \author{Arjun Yadav\\[0.3em]
+    \small Interactive Telecommunications Program (ITP), Tisch School of the Arts\\
+    \small New York University, New York, NY, USA\\
+    \small \href{mailto:ay3020@nyu.edu}{\texttt{ay3020@nyu.edu}}}
+\fi
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\input{sections/00-abstract}
+
+\input{sections/01-introduction}
+\input{sections/02-background}
+\input{sections/03-system}
+\input{sections/04-method}
+\input{sections/05-interpretations}
+\input{sections/06-revision}
+\input{sections/07-discussion}
+\input{sections/08-conclusion}
+
+\ifanonymous\else
+  \input{sections/09-acknowledgments}
+\fi
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/10-appendix}
+
+\end{document}

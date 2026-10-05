@@ -1,0 +1,47 @@
+\section{Revising the Ground}
+\label{sec:revision}
+
+The base system described in Section~\ref{sec:system} is its second version. The first was written quickly, to get beings moving, and the first interpretations were made on it. When I began to measure it, rather than only watch it, I found that it did not do what its rules described, and that what interpretations could show was being decided by those failures rather than by their thoughts. This section reports that revision, because it bears on a claim that is easy to make and harder to keep: that an interpretation is a reading of a system's emergent behaviour.
+
+\subsection{Measuring the system}
+
+To compare the two versions, I built an analysis page that loads both systems' code unchanged, runs each in its own scope under the same conditions, and measures them through small adapters (Appendix~\ref{app:reproducibility}). It plots the underlying curves (energy, speed, places wished for and planned, the probability of dying), relationships between them, the simulation as lived (population, places reached a day, the share of beings travelling over time, age at death), a set of thirteen checks with a pass or fail for each system, and the main numbers across ten world set-ups. The comparison below is for a world of 1440$\times$900 pixels and 500 beings.
+
+\subsection{What the first version did}
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabularx}{\linewidth}{@{}l X X@{}}
+    \toprule
+    & \textbf{first version} & \textbf{revised version} \\
+    \midrule
+    Destinations & any place in the world, at random (about 400\,px away on average) & a loop of nearby places, chosen at the being's own range \\
+    Beings travelling at any moment & about 98\% & about 28--35\% \\
+    Departures & bunched on the hour (23\% in the busiest 1\% of moments) & spread evenly (1.9\% in the busiest 1\%) \\
+    18--45-year-olds reaching no place in a day & 36--38\% & 0.1\% \\
+    Planned slots & about 4, whatever the age & about 11 / 4 / 2 for ages 18--35 / 36--59 / 60+ \\
+    Death roll & every frame of the killing hour, until the population fell to 95\% & once a day, per being \\
+    Lifespans & nobody past their late forties & median 62--78 by vigor; about 7\% reach 100 \\
+    Re-planning & everyone at once, at midnight & each being at its own day start \\
+    \bottomrule
+  \end{tabularx}
+  \caption{The first and revised base systems, measured under the same conditions. The first-version numbers are for 5-hour days, the setting it was used with.}
+  \label{tab:revision}
+  \note{the revised-version column mixes measurements from 24-hour days (after the day-length change) & the first version's from 5-hour days. that's fair (each in the setting it was used in), but say it plainly, as the caption does, or re-measure both at one setting.}
+\end{table}
+
+Table~\ref{tab:revision} summarises the differences. In the first version, a being chose its destinations at random from the whole world, and walked to them at a speed that, for an adult, was about one pixel a frame. A typical trip was longer than a day, and a being chose its next destination only once it had arrived, so nearly every being was travelling at every moment, and more than a third of young adults reached no place at all in a day. Departures happened only when the world's hour matched a slot, so beings left in waves on the hour. Days that were short on screen also ran out of hours: slots past the end of the day were never reached, so everyone planned about four slots regardless of age, and the age-dependent busyness the system was meant to have was never expressed. The death roll was repeated on every frame of the killing hour until the population fell below its threshold; births refilled it and the roll culled it again, so about four times as many beings died as should have, and nobody lived past their late forties. Every birthday fell on the same frame, so everyone re-planned at once.
+
+None of these behaviours was intended, and none was visible as a bug: the world looked lively, and beings moved. But each changed what the interpretations drew. With nearly everyone always travelling, a reading of passing such as \work{missed connections} had almost no staying to set it against. With crowds rarely reaching places, a mesh has few still points to gather around. And with nobody old, a reading of ageing such as \work{the collective fabric}, made after the revision, would have had nothing to read. The first interpretations, made on the first version, were to a real extent readings of its defects.
+\note{check: which interpretations (by version number) were first made on the old system. the talk notes of 6 august show 1.5, 2.0, 3.0 \& 4.1.}
+
+\subsection{The case of home}
+
+One revision went the other way. During the rework I added a \emph{home}: each being's routine began and ended at a fixed place, the way many human days do. It seemed a natural rule from life. Measured over 400 days, however, it produced a strong, unplanned emergent pattern. Newborns appear beside their parents, and so take homes near their parents' homes; over generations, homes clustered, until 67 of 125 places went unused and the busiest place held eight times the average crowd. The world slowly emptied into a few neighbourhoods. Removing home, so that each new routine starts wherever the being is, dissolved the clustering (at most 7 places unused, and the busiest three to four times the average), and also reduced the share of beings travelling, since a day no longer began with a walk home.
+
+This is emergence in exactly Bar-Yam's sense: two individually reasonable rules (a fixed home; children born beside their parents) combining into a collective outcome that neither specifies~\cite{baryam1997}. It is also an outcome that would have dominated every interpretation drawn from the world. I removed home not because the clustering was uninteresting (it may well be the subject of a future interpretation) but because it was not a rule I had chosen to make, and the base system's job is to be a ground, not a thesis.
+
+\subsection{What the revision shows}
+
+The lesson I draw is a methodological one. The interpretations are presented as readings of a system's emergent behaviour, and the reading is where the artist's voice lies. But the ground on which they stand is not neutral, and its accidents read as content: a viewer cannot tell a defect in the ground from a choice in the reading. For an artist working this way, measuring the base system, with its ranges as well as its averages, is part of the work, not a step before it.

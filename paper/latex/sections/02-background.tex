@@ -1,0 +1,63 @@
+\section{Background and Related Work}
+\label{sec:background}
+
+This work sits where four bodies of work meet: the science of emergence and complex systems; instruction-based and conceptual art; generative and software art, including art made with artificial life; and the study of everyday life and human mobility, from which its rules are drawn.
+
+\subsection{Emergence and rule systems}
+
+That ``more is different'', that the behaviour of a whole is not readily deduced from the behaviour of its parts, is a long-standing observation across the sciences~\cite{anderson1972, simon1962}. Bar-Yam's account of emergent complexity, which motivates this work, frames it as a property of systems of simple parts whose collective behaviour is complex~\cite{baryam1997}; Holland describes emergence as ``much coming from little'', and locates it in rule-governed systems whose interactions generate perpetual novelty~\cite{holland1998}.\note{check holland's exact wording & page.}
+
+The simplest computational systems that exhibit it are one-dimensional cellular automata. A cell holds one of two states (0, dead, off; or 1, alive, on). A row of cells is given, and each next row is computed by a rule-set in which every cell reads its neighbours in the previous row. Wolfram's \emph{A New Kind of Science} catalogues the behaviour of every such elementary rule~\cite{wolfram2002}; Conway's Game of Life, its two-dimensional cousin, became the public face of emergence~\cite{gardner1970}.
+
+What interests me in these systems, as an artist, is a property that is easy to overlook: the state of a cell does not have to be drawn as black or white. It can be represented in any way at all, and the same rule, run from the same starting row, yields visibly different patterns depending on how each state is drawn (Figure~\ref{fig:ca}). A rule-set, in other words, \emph{affords more than its representation}. This observation is the seed of the software-interpretation (Section~\ref{sec:method}).
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.32\linewidth}
+    \includegraphics[width=\linewidth]{ca-2}
+    \caption{0 and 1 as white and black.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \includegraphics[width=\linewidth]{ca-3}
+    \caption{0 as a square, 1 as a circle.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \includegraphics[width=\linewidth]{ca-5}
+    \caption{each state as a rotated line.}
+  \end{subfigure}
+  \caption{One elementary cellular automaton (rule~165, from a row of alternating cells), drawn three ways. The rule and the data are the same in each; only the representation differs, and with it the pattern one sees.}
+  \label{fig:ca}
+  \note{check: the rule & starting row for these images, & that all three were made by you (the talk credits one to wolfram).}
+\end{figure}
+
+\subsection{Instruction as artwork}
+
+Conceptual art made the instruction itself the work~\cite{lewitt1967, lewitt1969}. Sol LeWitt wrote that ``the idea becomes a machine that makes the art''~\cite{lewitt1967}, and his wall drawings are sets of written instructions carried out by other people. \emph{Wall Drawing \#392} (1983), for instance, specifies a 12-inch grid over a black wall, with each square bisected by a vertical, horizontal or diagonal line, and leaves the direction of each line to the drafter~\cite{lewitt1983}. Two drafters following the same instruction produce wholly different walls; the online project \emph{Solving Sol} collects dozens of programmers' realisations of the same instructions in code~\cite{solvingsol}.
+
+LeWitt's instructions are about form. Yoko Ono's are about experience. The instruction pieces collected in \emph{Grapefruit}~\cite{ono1964}, like George Brecht's event scores in \emph{Water Yam}~\cite{brecht1963}, are written in plain language and often ask for something to be imagined, noticed or lived rather than made. Hans Ulrich Obrist's long-running \emph{do it} project extends the format to hundreds of artists, each writing instructions that anyone may carry out~\cite{obrist2013}. Across all of these, the written instruction separates the work's \emph{idea} from its \emph{realisation}, and makes the gap between them the place where interpretation happens.
+
+Vera Molnar's \emph{machine imaginaire}, the procedures she carried out by hand before she had access to a computer, shows how naturally this logic passed into computational art~\cite{molnar1975}. The software-interpretation keeps the plain-language instruction (the \emph{thought}) and its realisation (the \emph{expression}), but changes what is being instructed: not a drafter, but a reading of a system that is already running.
+
+\subsection{Generative and software art}
+
+Galanter defines generative art as any practice in which the artist uses a system, set into motion with some autonomy, that contributes to or results in a completed work~\cite{galanter2003}; Boden and Edmonds give a related taxonomy of generative and computer art~\cite{boden2009}. Burnham's earlier \emph{Systems Esthetics} had already argued that art was moving from objects to systems~\cite{burnham1968}.
+
+The work most directly in conversation with this one is Reas's \emph{Process Compendium}~\cite{reas2010, reasgithub}. Reas defines \emph{elements} by pairing simple forms with simple behaviours, and then writes \emph{processes}: English-language descriptions of what to draw from the elements' interactions. Process~18, for instance, draws a quadrilateral between the end-points of each pair of elements that touch. The elements themselves are never shown. This separation, between a system and the drawing made from it, is the model for the software-interpretation. Reas has discussed the wider practice of code as a medium in \emph{Form+Code}~\cite{reas2010formcode} and, with Fry, built the Processing environment in which much of it happens~\cite{reasfry2007}; this work is written in its JavaScript descendant, p5.js~\cite{p5js}.
+
+The difference I am concerned with is in the system that is read. Reas's elements are deliberately abstract, so that the processes are about form. In \emph{emergence-study}, the system is about something: the daily lives of beings. An interpretation of it can therefore be about something as well.
+
+\subsection{Artificial life and agent-based models}
+
+Artificial life set out to study ``life as it could be'' by synthesising life-like behaviour in software~\cite{langton1989}. Reynolds's boids showed that convincing flocks emerge from three local steering rules~\cite{reynolds1987}, and Whitelaw traces how artists took up such systems as a medium, a practice he calls \emph{metacreation}~\cite{whitelaw2004}. In the social sciences, agent-based models make a related move: Schelling showed that mild individual preferences about neighbours can produce stark segregation at the scale of a city~\cite{schelling1971}, and Epstein and Axtell's \emph{Sugarscape} grew trade, migration and inequality from agents with a few simple rules~\cite{epstein1996}.
+
+\emph{emergence-study} borrows its form from these models: agents with traits, local rules, and a population that turns over. Its aim, however, is not to explain a social phenomenon, and its rules are not fitted to data. They are chosen so that they are recognisable as life, and so that they can carry an artist's reading.
+
+\subsection{Everyday life and mobility}
+
+Everyday life has its own theorists. Hägerstrand's time-geography describes each life as a path through space and time, held together by daily stations (home, work, others) and constrained by how far and how fast a body can move in a day~\cite{hagerstrand1970}; it is, in effect, the frame on which this system's routines are built. De Certeau reads walking in the city as an everyday practice that writes its own text over the planned city~\cite{decerteau1984}, and Lefebvre proposes a \emph{rhythmanalysis} of the repetitions that structure a day~\cite{lefebvre2004}. Jacobs's ``sidewalk ballet''~\cite{jacobs1961} and Whyte's filmed studies of plazas~\cite{whyte1980} attend to the same everyday movement at the scale of a street.
+
+Empirical work has since found that human movement is highly regular: most people return again and again to a few places, and venture further only rarely~\cite{gonzalez2008, song2010}. Batty describes cities as systems of flows and networks rather than of places alone~\cite{batty2013}. These findings shaped the system's rules qualitatively (routines of a few nearby places, with the occasional long trip), though the system makes no claim to reproduce them quantitatively.
+
+\subsection{Positioning}
+
+Artistic data visualisation, as Vi{\'e}gas and Wattenberg describe it, uses the techniques of visualisation to make an argument or express a point of view rather than to support analysis~\cite{viegas2007}. A software-interpretation is close to this, with one difference: its data is not gathered from the world but generated by a system that the artist also made. The work therefore sits between three practices. Like instruction art, it begins with a written thought. Like generative art, it hands the realisation to a system. And like artistic data visualisation, it selects and represents data in order to say something. What it adds is a base system whose rules are themselves drawn from everyday life, so that the thought, the system and the drawing all refer to the same thing.

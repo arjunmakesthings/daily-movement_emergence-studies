@@ -1,0 +1,98 @@
+\section{The Base System}
+\label{sec:system}
+
+The base system is written in JavaScript with p5.js~\cite{p5js}, as two classes, \code{World} and \code{Being}, of about 900 lines together. It has no build step and no dependencies beyond p5.js. This section describes it in prose; the full equations are collected in Appendix~\ref{app:rules}. In summary:
+
+\begin{quote}
+There is a \emph{world}, and it consists of many \emph{places}. The world contains a \emph{population} of \emph{beings}, who are born, sustained and killed over \emph{time} by the world. Beings express life through \emph{movement}, and movement is governed by a \emph{schedule}. Both the schedule and the movement are governed by \emph{age}.
+\end{quote}
+
+\subsection{Design principles}
+
+Four principles guided the system's design, and they explain most of its choices.
+
+\begin{description}[leftmargin=1.2em, font=\normalfont\itshape]
+  \item[Rules from life, not from form.] Every rule should be recognisable as something that happens in a life: keeping a routine, slowing down with age, having a child, dying. No rule exists only because it produces an interesting pattern.
+  \item[Noise is intended.] Every trait and every age-dependent quantity is drawn with noise. The unlikely must be possible but not likely: a busy sixty-year-old, a frail twenty-year-old, a being who roams far from where it lives. Accordingly, the system is documented with ranges, not only averages (Figure~\ref{fig:graphs}).
+  \item[No lockstep.] Nothing should happen to everyone at once. Each being's day starts at its own hour, and its plans change at its own moment, so the world moves continuously, calmly, and without global pulses.
+  \item[Nothing is added that life does not suggest.] When a concept was tried and found to distort the system (Section~\ref{sec:revision} describes \emph{home}), it was removed rather than tuned.
+\end{description}
+
+\subsection{World, places and time}
+
+The world is a rectangle of a given width and height. Its \emph{places} number one for every four beings at the start (at least two), and are laid out on a golden-angle, or sunflower, spiral~\cite{vogel1979} within a disc around the world's centre whose radius is 45\% of the world's shorter side. The spiral spreads places evenly without a grid, so that every place has a few neighbours at roughly the same distance, the \emph{place spacing}. A place has no fixed size: its radius grows with the crowd staying at it, so newcomers arrive at the edge of a crowd rather than at a point.
+
+A day is always 24 hours, and beings live it the same way in every world. A separate parameter, the \emph{day length}, sets only how long a day lasts on screen (in seconds, at 60 frames per second); it is the world's playback speed. One day is also one year of a being's life: beings age by one year at every midnight. This compression lets a viewer watch whole lives, from birth to death, over an evening.
+
+\subsection{Beings and their bodies}
+
+A being is created with a position and an age. On creation it draws a set of personal traits, which play the role of a genome but are not inherited:
+\begin{itemize}[leftmargin=1.5em, itemsep=0.1em]
+  \item a \emph{maximum mass}, the size it grows to by about the age of eighteen;
+  \item a \emph{walking pace}, a multiplier between 0.75 and 1.25;
+  \item a \emph{range}, how far it is willing to travel between places, drawn log-normally so that most beings stay local and a few roam; and
+  \item a \emph{vigor}, drawn log-normally around 1, which raises its energy and lengthens its life.
+\end{itemize}
+Its body then changes with age. \emph{Mass} grows asymptotically to its maximum; it determines only how large the being is drawn and how much room it takes up, not how fast it moves. \emph{Energy} is the product of two logistic curves, one rising through childhood (centred on age 12) and one falling through middle age (centred on 50), above a floor of one fifth, and scaled by vigor (Figure~\ref{fig:graphs}b). It climbs through childhood, plateaus through the twenties and thirties, is about 60\% of that plateau at fifty, and never falls to nothing. A being's \emph{speed} is proportional to its energy and its walking pace, and is measured in the world's own geography: at full energy, a being reaches a neighbouring place in about three-quarters of an hour.
+
+\subsection{The routine}
+
+Each being keeps a \emph{routine}: a closed loop of a few places it frequents, which it goes round every day, staying at each for a while. How many places it \emph{wishes} to visit, its \emph{busyness}, follows a bell curve over age that peaks at 25, between two and twelve places, with more noise further from the peak (Figure~\ref{fig:graphs}a). How many it actually \emph{gets} depends on its body and on distance.
+
+A routine is built as follows. It begins at the place nearest to the being. Each next place is chosen near the last, with a likelihood that falls off exponentially with distance at the being's own range. A place is added only if there is still time in the day to get there, stay at least an hour, and get back round to the first place, so that the loop always closes within 24 hours; places that also leave room for the remaining wished-for stops are preferred. The loop is then laid out over the day from the being's own \emph{day start}, a random moment unique to it. Each slot of the schedule lasts as long as the trip to its place plus a minimum stay of one hour, and spare time is split into random shares across the stays, so that stays end at any moment rather than on the hour. If a slower body cannot fit the whole loop, its last places are dropped; a being with only one place stays there all day.
+
+Every frame, a being checks which slot of its schedule the world's clock falls in. If that slot names a different place, it leaves for it, in a straight line, even if it had not yet arrived where it was going. On arrival it stays until the schedule says otherwise.
+
+There is no \emph{home}. A new routine starts from the place nearest to wherever the being is, so the places a being frequents can change, and over many years it may drift from one neighbourhood to another. Routines change at birthdays: always for young children (ages 2--6), with even odds for ages 7--60, and with a one-in-four chance after 60; otherwise the same places are re-timed for the body's new pace. New plans are taken up only at the being's own day start, so nobody re-plans in lockstep at midnight. Beings under two do not move.
+
+\subsection{Birth and death}
+
+The world keeps its population near its starting size. Once a day, at a randomly chosen hour, if the population is above 95\% of its starting size, each being dies with a probability that rises with the cube of its age, above a small floor, and is scaled by the square of its frailty (the inverse of its vigor; Figure~\ref{fig:graphs}c). The chance is about 0.1\% at 20, 1.5\% at 50, 6\% at 80 and 12\% at 100. Whenever the population is below its starting size, beings aged 18--45 may reproduce with a neighbour of the same ages, with a probability that peaks in the late twenties; each pair has at most one child per round, and the newborn appears between its parents, wherever they happen to be.
+
+\subsection{What the system does}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{graph-busyness}
+    \caption{Busyness (places wished for), over age: a bell curve peaking at 25, with wider noise away from the peak.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{graph-energy}
+    \caption{Energy, over age: two logistic curves multiplied, above a floor, scaled by log-normal vigor.}
+  \end{subfigure}\\[0.6em]
+  \begin{subfigure}[t]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{graph-dying}
+    \caption{Probability of dying on a given day, over age: a cubic curve above a small floor, scaled by frailty squared.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{graph-movement}
+    \caption{Pixels travelled in each hour of a being's own day. No equation: it emerges from the schedules.}
+  \end{subfigure}\\[0.6em]
+  \begin{subfigure}[t]{0.7\linewidth}
+    \includegraphics[width=\linewidth]{graph-population}
+    \caption{Population at each day's end, with births and deaths: a feedback loop around a set point.}
+  \end{subfigure}
+  \caption{The base system, measured. Lines are averages; grey bands are ranges, because the system's noise is intended. (1440$\times$900 pixels, 500 beings, 20 days.)}
+  \label{fig:graphs}
+  \note{these graphs were measured before the day-length change; re-run \code{assets/cde/analysis/slide.html} & replace them before submission.}
+\end{figure}
+
+The system was measured headlessly, by running the real \code{World} and \code{Being} code outside the browser and instrumenting it (1440$\times$900 pixels, 500 beings; Appendix~\ref{app:reproducibility}). A few properties are worth noting, because no single rule specifies them.
+
+\paragraph{A steady flow.} At any moment, about 28--35\% of beings are travelling (median 32\%), and this share is steady through the day, although no rule sets it. Departures are spread evenly in time: the busiest 1\% of moments account for only 1.9\% of departures. Distance travelled per hour of a being's own day is nearly flat (Figure~\ref{fig:graphs}d).
+
+\paragraph{Lives that differ by age.} Places planned per day are about 11 for beings aged 18--35, 4 for 36--59 and 2 over 60; places actually reached are about 9.5 in the twenties and thirties, 5 in the forties, 3 in the fifties, and 2.5--2.8 after sixty. No being aged 18 or over spends a whole day at one place, and only 0.1\% of 18--45-year-olds reach no place on a given day. Most trips are short, but a few are long: about 2\% of trips cross more than five place spacings, and the longest nearly cross the world.
+
+\paragraph{Lifespans that differ by vigor.} Median lifespan is about 62 for beings of low vigor, 70 for middling and 78 for high. Roughly 18.5\% of beings die before fifty, about 15\% live past ninety, and about 7\% reach a hundred.
+
+\paragraph{A population that holds.} The population returns to its starting size within one or two frames of any death, and the age structure is stable over hundreds of days (median age about 32--36). Deaths match the death-chance formula within noise; every birth is to two neighbouring parents aged 18--45; and no being is a parent twice in a round.
+
+\paragraph{Neighbourhoods without homes.} Without a home, routines spread across the world: after 400 days, at most 7 of 125 places go unused, the busiest place has three to four times the average crowd, and routines lean only slightly towards the centre (about 57\% of routine places lie in the inner half of the area, against 46\% at the start). Section~\ref{sec:revision} shows that this is not a given.
+\note{the home / no-home numbers were measured with 5-hour days, before the day-length change. re-measure, or say so in the text.}
+
+\subsection{What an interpretation can read}
+
+An interpretation creates a world with four parameters (population, day length, maximum mass and a debug flag), and then reads it every frame. The world exposes its time of day (as an hour, \code{world.time}, and as a continuous clock), its places (each with a position and its current crowd), and its beings. Each being exposes its \code{age}, position (\code{pos}), \code{mass}, \code{energy}, \code{destination}, \code{busyness}, \code{schedule}, speed, and a query for its neighbours within a radius. Two internal properties are also read by some interpretations: a being's \code{state} (travelling or staying) and the \code{place} it is at or heading to.
+
+This interface is deliberately narrow. An interpretation looks at the world but, by rule, never changes it; every interpretation therefore reads the \emph{same} system, and their differences are differences of reading.

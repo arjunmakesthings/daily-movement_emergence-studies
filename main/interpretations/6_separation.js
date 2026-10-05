@@ -8,7 +8,7 @@ expression:
 for each group of beings at a particular place, average out the direction that they arrived from, and treat it as an infinite line. for each of these lines, draw an orthogonal line between the place and its neighboring place in one of two colors. draw these lines over time.
 
 parameters:
-population: 500,
+population: 1000,
 day_length: 48.
 
 3rd october, 2026.

@@ -8,7 +8,8 @@ expression:
 treat the position of each being as a vertex. generate a triangular-mesh by finding tuples close to each other, so that no point is inside a face. keep generating the mesh over time, as beings move.
 
 parameters: 
-population: 1000.
+population: 1000,
+day_length: 24 (default).
 
 24th july, 2026.
 */

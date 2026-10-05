@@ -1,0 +1,145 @@
+\section{Six Interpretations}
+\label{sec:interpretations}
+
+This section presents the six interpretations made so far. Each is given with its thought and expression exactly as written in its source file, and its parameters as the code runs them. A short account of how it is realised follows, and then what it shows. The thoughts come from my own life; they are not drawn from any literature, and that is the point. Each runs full-screen in a browser; the stills shown here were captured from those runs.
+
+% ------------------------------------------------------------
+\subsection{born in pairs}
+\label{sec:pairs}
+
+\begin{interpretation}{\#1: born in pairs}
+  \item[thought] beings are destined to be with someone that they were born close to (in proximity \& age). however, as they live out their lives, they may be close or separated in the world. thought is borrowed from the red thread of fate.\footnote{The red thread of fate is an East Asian folk belief, in which an invisible red cord ties together people who are destined to meet.\note{add a source for the red thread, if a venue asks for one; a book on chinese or japanese folklore is better than a website.}}
+  \item[expression] draw a set of red lines between two beings that are `destined' to be together, over time. the closer they are to each other in space, the more red lines are drawn \& the stronger they are (in color \& density).
+  \item[parameters] population: 200 (4 pairs shown); day length: 48.
+\end{interpretation}
+
+\paragraph{Realisation.} When the world is created, its beings are paired by how close they were born, in space (as a share of the world's diagonal) and in age (as a share of a hundred years), weighted equally: starting from one being, the chain repeatedly steps to the nearest remaining being, and consecutive beings in the chain are paired. Only the first four pairs are drawn. Every frame, each living pair is joined by a bundle of red lines: between two and ten of them, more when the pair is close, each thinner, paler and less saturated as the pair moves apart, and each jittered slightly by noise. The drawing accumulates. A pair's thread ends when either of them dies.
+
+\paragraph{What it shows.} Because beings keep routines, one of a pair is often staying while the other travels. A line held at one end while its other end moves in a straight line sweeps out a triangle, and the image is built from these fans: deep red where the two were close, fading to pink and white where their days took them apart (Figure~\ref{fig:pairs}). The shape of each pair's drawing is, in effect, the shape of how their two routines overlapped over a lifetime.
+
+\anecdote{why this thought: what made you think of the red thread, & of people born close to each other drifting apart or staying together.}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{interp-1}
+  \caption{\work{born in pairs}: four pairs, over their lifetimes. Each fan is swept out by a thread held at one being's place while the other travels.}
+  \label{fig:pairs}
+\end{figure}
+
+% ------------------------------------------------------------
+\subsection{missed connections}
+\label{sec:missed}
+
+\begin{interpretation}{\#2: missed connections}
+  \item[thought] we walk by so many people. when they are within a certain distance, we have a short window of time to connect with each other in physical-space, until we are distant again.
+  \item[expression] draw a line from each being to other beings around them within a specific radius; while one of them is travelling. the closer they are, the thicker the line.
+  \item[parameters] population: 1000; day\_length: 48; max\_mass: 6.
+\end{interpretation}
+
+\paragraph{Realisation.} Every frame, on a white ground that is cleared each time, each being looks for neighbours within three times its own size. A black line joins the two if at least one of them is travelling; beings staying together at a place are not passing each other, and are not joined. The line is thickest when the two are touching and thins to almost nothing at the edge of the radius.
+
+\paragraph{What it shows.} This is the only interpretation that does not accumulate: it shows only the present. Lines appear as two beings approach, thicken as they pass, thin as they part and disappear, so every connection is visibly brief. Crowds at places stay unconnected unless someone is arriving or leaving through them, and the drawing is busiest on the routes between places, where travellers cross.
+
+\anecdote{why this thought: a moment of walking past someone in new york, & the window closing.}
+
+\note{there's no still of \#2 yet. add one (or a short sequence of three frames, since it's the only interpretation that's cleared every frame), as Figure~X.}
+
+% ------------------------------------------------------------
+\subsection{all the world's a mesh}
+\label{sec:mesh}
+
+\begin{interpretation}{\#3: all the world's a mesh}
+  \item[thought] all beings are connected to each other via an invisible mesh.
+  \item[expression] treat the position of each being as a vertex. generate a triangular-mesh by finding tuples close to each other, so that no point is inside a face. keep generating the mesh over time, as beings move.
+  \item[parameters] population: 1000; day\_length: 24 (default).
+\end{interpretation}
+
+\paragraph{Realisation.} Every frame, the positions of all beings are triangulated (a Delaunay triangulation~\cite{delaunay1934, delaunator}) and every triangle is drawn with an almost transparent stroke, alternately black and white; the black-edged triangles are also filled with a nearly transparent white, slightly more opaque the smaller they are. The drawing accumulates over time.
+
+\paragraph{What it shows.} The places are never drawn, but they appear (Figure~\ref{fig:mesh}). Where a crowd is staying, many vertices sit still at nearly the same point frame after frame, and the accumulated triangles meet there as stars. Between them, the routes between places are drawn as denser strands. The disc within which places lie becomes a dense, finely knit core, and beyond it, where few beings go, the mesh stretches into long, thin triangles reaching to the edges of the world. Over time, the mesh records not where beings are, but where they keep returning.
+
+\anecdote{why this thought: what ``invisible mesh'' means to you in daily life.}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.32\linewidth}\includegraphics[width=\linewidth]{interp-3-1}\caption{}\end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}\includegraphics[width=\linewidth]{interp-3-2}\caption{}\end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}\includegraphics[width=\linewidth]{interp-3-3}\caption{}\end{subfigure}
+  \caption{\work{all the world's a mesh}, at three points in time. The places, never drawn, appear as the stars of the mesh.}
+  \label{fig:mesh}
+  \note{check the order of the three images & what times they are from.}
+\end{figure}
+
+% ------------------------------------------------------------
+\subsection{meetings are ripples}
+\label{sec:ripples}
+
+\begin{interpretation}{\#4: meetings are ripples}
+  \item[thought] meeting people can be resounding. when two beings meet, a ripple is sent through space \& time; that may affect other beings.
+  \item[expression] connect travelling beings close to each other with a black line. when two beings collide, send out a circular ripple expanding from the point of collision. the closer the beings are, the further the ripple goes. lay this out over time.
+  \item[parameters] population: 500; day\_length: 48; max\_mass: 20.
+\end{interpretation}
+
+\paragraph{Realisation.} The ground is black and never cleared. A \emph{meeting} lasts from when two beings come within twice the maximum mass of each other until they part. At its closest moment, it sends out one ripple from the point between them: a ring of slightly jittered white points that expands by a pixel every frame and slowly fades. The closer the meeting, the further its ripple goes, from fifty pixels for a glancing pass to the width of the world for a collision. At most a hundred ripples exist at once, and none starts within twenty pixels of another, so many meetings pass without one. Meanwhile, every travelling being draws a very faint black line to one close neighbour.
+
+\paragraph{What it shows.} The ripples accumulate into a luminous grey haze, brightest where meetings happen most, which is to say at and around places (Figure~\ref{fig:ripples}). The black lines, which would be invisible on black, become visible only where ripples have first lit the ground: travel is seen only where meetings have been. Where many beings pass, these lines carve a dark web through the haze.
+
+\anecdote{why this thought: a meeting that was ``resounding'' for you.}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.49\linewidth}\includegraphics[width=\linewidth]{interp-4-1}\caption{}\end{subfigure}\hfill
+  \begin{subfigure}[t]{0.49\linewidth}\includegraphics[width=\linewidth]{interp-4-2}\caption{detail.}\end{subfigure}
+  \caption{\work{meetings are ripples}. Black lines between travellers are visible only where ripples from earlier meetings have lit the ground.}
+  \label{fig:ripples}
+\end{figure}
+
+% ------------------------------------------------------------
+\subsection{the collective fabric of age \& experience}
+\label{sec:fabric}
+
+\begin{interpretation}{\#5: the collective fabric of age \& experience}
+  \item[thought] beings age and morph into more experienced beings over time. as they grow older, more beings are affected by their experience. we all live in the collective fabric of each other's experience.
+  \item[expression] surround each being with a polygon. as they age, more nodes are added. therefore, younger ones are likely to be sharper; while older ones are likely to be rounder. as they age, expand the spread of the polygon \& move it closer to white. note that the size of the polygons are far greater than the size of the world.
+  \item[parameters] population: 1000; day\_length: 48.
+\end{interpretation}
+
+\paragraph{Realisation.} Each being is surrounded by a polygon that begins as a rough triangle. Every year (every day of the world), it gains one to four nodes at random moments, each placed in one of the polygon's widest gaps, so a being of a hundred has some 250 nodes and is nearly a smooth curve. The nodes sit on a closed form of the being's own, a loop of noise that drifts slowly as the being ages, and each wanders a little off it. A polygon's size is its being's mass, times a factor that grows with age, times a personal \emph{impact} drawn log-normally, so that the old are likely to be large but some of the young are large and some of the old are small; at full size, polygons are several times larger than the world. The line is darker for the young and whiter for the old. The drawing accumulates.
+
+\paragraph{What it shows.} No polygon can be seen whole; what is visible is their overlap (Figure~\ref{fig:fabric}). The young contribute sharp, dark, angular lines; the old, wide, pale, rounded ones. Because each polygon moves with its being, its routine is written across the whole picture, far from where the being actually is: every being's life is present everywhere, as a fold in a fabric of crumpled grey.
+
+\anecdote{why this thought: someone older whose experience shaped yours, or the idea of a ``fabric'' of experience.}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.49\linewidth}\includegraphics[width=\linewidth]{interp-5-1}\caption{}\end{subfigure}\hfill
+  \begin{subfigure}[t]{0.49\linewidth}\includegraphics[width=\linewidth]{interp-5-2}\caption{detail.}\end{subfigure}
+  \caption{\work{the collective fabric of age \& experience}. Polygons far larger than the world overlap into one surface: dark and sharp for the young, pale and rounded for the old.}
+  \label{fig:fabric}
+\end{figure}
+
+% ------------------------------------------------------------
+\subsection{separation}
+\label{sec:separation}
+
+\begin{interpretation}{\#6: separation}
+  \item[thought] beings in different locations hold opposing views, and are separated over time.
+  \item[expression] for each group of beings at a particular place, average out the direction that they arrived from, and treat it as an infinite line. for each of these lines, draw an orthogonal line between the place and its neighboring place in one of two colors. draw these lines over time.
+  \item[parameters] population: 1000; day\_length: 48.
+\end{interpretation}
+
+\paragraph{Realisation.} Each place's surroundings are its eight nearest places. Every frame, the beings staying at each place are grouped by \emph{side}: the surrounding place that lies most in the direction from the place to the being. For each side, the beings' directions are averaged as lines rather than arrows, so that beings on opposite edges of a crowd agree instead of cancelling out. Each being on a side then draws its own line, orthogonal to that average, halfway between the place and the place on that side, each nudged by the being's own slowly drifting noise in position, tilt and thickness. Lines grow longer as the place grows more crowded, up to two and a half times the gap between the places. Each being is, at random and permanently, blue or red; colours are darkest at the centre of the world and lightest at its edge. Every line is faint, and strength comes only from how many lines pile up. The drawing accumulates.
+
+\paragraph{What it shows.} Walls appear between neighbouring places, in the colours of the beings who stand on either side of them (Figure~\ref{fig:separation}). Busy places throw up long, dense barriers; quiet ones, short and faint ones. Again, the places themselves are never drawn, but the image organises itself around them as a field of starbursts, and the colour of each barrier records who happened to be standing there, over time.
+
+\anecdote{why this thought: what prompted ``opposing views'' \& separation, & the choice of democrat blue \& republican red.}
+
+\note{the expression says ``the direction that they arrived from''; the code averages the side of the place each staying being is on (close to where it arrived, but not the same). consider rewording the expression in the code header, & then here.}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.49\linewidth}\includegraphics[width=\linewidth]{interp-6-1}\caption{}\end{subfigure}\hfill
+  \begin{subfigure}[t]{0.49\linewidth}\includegraphics[width=\linewidth]{interp-6-2}\caption{detail.}\end{subfigure}
+  \caption{\work{separation}. Lines are drawn between neighbouring places by the beings staying on either side; their colours are assigned at random.}
+  \label{fig:separation}
+\end{figure}

@@ -1,5 +1,5 @@
 /*
-interpretation #5.1: the collective fabric of age & experience.
+interpretation #5: the collective fabric of age & experience.
 
 thought:
 beings age and morph into more experienced beings over time. as they grow older, more beings are affected by their experience. we all live in the collective fabric of each other's experience. 

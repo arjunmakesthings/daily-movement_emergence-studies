@@ -1,0 +1,42 @@
+\section{Software-Interpretations}
+\label{sec:method}
+
+A software-interpretation is the unit of the artwork. It is always written in English first, and then realised by an algorithm that the artist constructs. Every interpretation is documented, at the top of its source file, in three parts.
+
+\begin{description}[leftmargin=1.2em, font=\normalfont\itshape]
+  \item[Thought.] The core idea to express from the system, in plain language. A thought is written from the artist's lived experience, and is not derived from the system; it is a way of seeing that the artist brings to it. A thought should be legible to anyone, whether or not they read code.
+  \item[Expression.] The technical account of how the thought is realised: which data are extracted from the system, how they are represented, and how the drawing develops over time (whether it accumulates, fades, or is cleared every frame). An expression should describe exactly what the code does.
+  \item[Parameters.] The settings of the world in which the interpretation runs: population, day length and, where relevant, maximum mass. Some interpretations are computationally heavier than others, or need a denser or slower world to show what they look for, so the world is adjusted to the reading, but its rules never are.
+\end{description}
+
+Each interpretation also carries the date it was made.
+
+\subsection{Thought and expression}
+
+The split between thought and expression follows instruction art. In LeWitt's terms, the thought is the idea and the expression is its execution~\cite{lewitt1967}; in Ono's, the thought is the instruction, and much of its value lies in what it asks the reader to imagine~\cite{ono1964}. Writing the thought separately has two effects that I have found useful in practice.
+
+First, it keeps the work honest. An expression can be checked against its thought: does this drawing actually say what the thought says? When it does not, either the expression changes or the thought is rewritten, and both changes are visible in the file's history. Second, it makes the work legible to people who will never read the code. In exhibition and in talks, an interpretation is introduced by its thought alone; the image is then read against it.
+
+\subsection{The artist as reader}
+
+In Reas's \emph{Process Compendium}, the artist authors the elements, their behaviours and the processes that draw them~\cite{reas2010}. In \emph{emergence-study} the same person authors both the base system and its interpretations, but in two distinct roles. As the maker of the system, I try to make rules that are true to life and that do not anticipate any particular reading. As its reader, I approach the running system with a thought, and look for the data that can carry it. The narrow interface of Section~\ref{sec:system}, through which an interpretation can read but not alter the world, is what keeps these roles apart.
+
+This separation has a consequence worth stating plainly. The interpretations are not visualisations of the system, in the sense of showing it as it is. They are readings of it, each partial and each motivated. The same world, at the same moment, is at once a set of fated pairs, a field of passing encounters, a mesh, a pond of ripples, a fabric of ageing and a map of division. None of these readings is the system; all of them are drawn from it.
+
+\subsection{An example}
+
+The header of the third interpretation (Section~\ref{sec:mesh}) reads, in full:
+
+\begin{quote}\small\ttfamily
+interpretation \#3: all the world's a mesh.\\[0.4em]
+thought:\\
+all beings are connected to each other via an invisible mesh.\\[0.4em]
+expression:\\
+treat the position of each being as a vertex. generate a triangular-mesh by finding tuples close to each other, so that no point is inside a face. keep generating the mesh over time, as beings move.\\[0.4em]
+parameters:\\
+population: 1000,\\
+day\_length: 24 (default).\\[0.4em]
+24th july, 2026.
+\end{quote}
+
+The thought is a single sentence anyone can hold in mind. The expression names a technique (a Delaunay triangulation~\cite{delaunay1934}, computed with Delaunator~\cite{delaunator}) in plain terms, and states that the drawing accumulates. The parameters set a dense world, so that the mesh is fine.

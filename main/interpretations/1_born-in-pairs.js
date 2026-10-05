@@ -10,7 +10,7 @@ expression:
 draw a set of red lines between two beings that are 'destined' to be together, over time. the closer they are to each other in space, the more red lines are drawn & the stronger they are (in color & density). 
 
 parameters:
-population = 4 (shown). 
+population = 200 (4 pairs shown).
 day length = 48;
 
 # 261002.

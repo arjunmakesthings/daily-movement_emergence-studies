@@ -1,0 +1,53 @@
+\section{The Rules in Full}
+\label{app:rules}
+
+Notation: $N_0$ is the starting population, $W \times H$ the world's size, $D$ the day length (seconds on screen per day), and $M$ the maximum mass. $\mathcal{N}(\mu, \sigma)$ is a normal draw, $\mathcal{U}(a, b)$ a uniform draw, $\sigma(x) = 1/(1+e^{-x})$ the logistic function, and $\mathrm{clamp}(x, a, b)$ limits $x$ to $[a, b]$. Ages $a$ are in years; one day of the world is one year.
+
+\subsection*{World}
+\begin{align*}
+  \text{places:}\quad & n = \max\!\big(2, \lfloor N_0/4 \rfloor\big), \qquad R = 0.45\,\min(W, H) \\
+  \text{place } i:\quad & r_i = R\sqrt{(i + 0.5)/n}, \qquad \theta_i = i\,\pi(3 - \sqrt{5}) \\
+  \text{place spacing:}\quad & s = R\sqrt{\pi / n} \\
+  \text{frames per hour:}\quad & h = 60D / 24 \\
+  \text{pace (px per frame at full energy):}\quad & v_0 = s / (0.75\,h) \\
+  \text{place radius, with crowd } c:\quad & \tfrac{M}{2}\sqrt{c/0.9} + M \\
+  \text{starting ages:}\quad & a = \mathrm{round}\big(\mathrm{clamp}(\mathcal{N}(32, 18), 0, 80)\big)
+\end{align*}
+
+\subsection*{Traits (per being, not inherited)}
+\begin{align*}
+  m_{\max} &= \mathrm{clamp}\big(\lfloor \mathcal{N}(10, 6) \rfloor, \min(5, M), M\big), \qquad a_m = \lfloor \mathcal{N}(18, 1) \rfloor \\
+  u &\sim \mathcal{U}(0.75, 1.25) \quad \text{(walking pace)} \\
+  \nu &= e^{\mathcal{N}(0,\, 0.2)} \quad \text{(vigor)} \\
+  \rho &= s\, e^{\mathcal{N}(0.4,\, 0.6)} \quad \text{(range)}
+\end{align*}
+
+\subsection*{Body over age}
+\begin{align*}
+  m(a) &= m_{\max}\,\frac{1 - e^{-5a/a_m}}{1 - e^{-5}} \\
+  E(a) &= 10\,\nu\;\sigma\!\Big(\frac{a - 12}{3}\Big)\Big(0.2 + 0.8\,\sigma\!\Big(\!-\frac{a - 50}{7}\Big)\Big) \\
+  v(a) &= v_0\,\frac{E(a)}{10}\,u \quad \text{(speed, px per frame)}
+\end{align*}
+
+\subsection*{Routine}
+\begin{align*}
+  g(a) &= e^{-(a - 25)^2 / (2 \cdot 10^2)} \\
+  \text{busyness:}\quad b &= \mathrm{clamp}\Big(\mathrm{round}\big(\mathcal{N}\big(2 + 10\,g(a),\; 1.25 + 3.5\,(1 - g(a))\big)\big), 2, 12\Big) \\
+  \Pr(\text{next place } p \mid \text{last place } q) &\propto e^{-\lVert p - q \rVert / \rho}, \quad \text{over places that still close the loop within 24 hours}
+\end{align*}
+Each slot lasts the trip to its place plus a minimum stay of 1 hour; spare hours are divided by random shares among the slots. Routines are renewed on birthdays with probability 1 (ages 2--6), 0.5 (7--60) or 0.25 (over 60), and otherwise re-timed; the new plan takes effect at the being's own day start. Beings under 2 do not move.
+
+\subsection*{Birth and death}
+\begin{align*}
+  \Pr(\text{death today}) &= \Big(0.0002 + 0.12\,\min(a/100, 1)^3\Big)\,\frac{1}{\nu^2}, \quad \text{rolled once a day, if } N > 0.95\,N_0 \\
+  \Pr(\text{child}) &= 0.2\;\sigma\!\Big(\frac{a - 18}{2}\Big)\,\sigma\!\Big(\!-\frac{a - 40}{2}\Big), \quad \text{while } N < N_0,\ \text{both parents aged } 18\text{--}45 \text{ and neighbours}
+\end{align*}
+Neighbours are beings within $2M$. Each pair has at most one child per round; the newborn appears at the midpoint of its parents. Overlapping beings are pushed apart symmetrically, in two passes over a spatial grid, every frame.
+
+\section{Reproducibility}
+\label{app:reproducibility}
+
+The system is written in JavaScript with p5.js~1.11, in two files (\code{world.js}, \code{being.js}), and runs in any modern browser with no build step. Each interpretation is a single file that creates a world, runs it every frame, and draws from it; switching between interpretations means loading a different file.
+
+The measurements in Sections~\ref{sec:system} and~\ref{sec:revision} were made headlessly, by running the unmodified \code{World} and \code{Being} classes in Node.js with a minimal stand-in for the parts of p5.js they use (vectors, random draws, and constraint), and instrumenting them from outside. The analysis pages that produced Figure~\ref{fig:graphs} and Table~\ref{tab:revision} run both versions of the system side by side, unchanged, each through a small adapter that says how its beings are measured; they are included in the repository. Unless stated otherwise, measurements are for a world of 1440$\times$900 pixels and 500 beings.
+\note{say which commit the paper describes (e.g. a git tag like \code{paper-v1}), so reviewers can run exactly this version.}

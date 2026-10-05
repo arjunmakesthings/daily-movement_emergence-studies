@@ -1,0 +1,49 @@
+% ============================================================
+% preamble: packages & commands, shared by every version.
+% (venue templates load many of these themselves; venue wrappers
+% may skip this file & use only the "commands" part at the bottom.)
+% ============================================================
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[letterpaper, margin=1in]{geometry}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage[font=small, labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[numbers, sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figures/}}
+
+% ------------------------------------------------------------
+% commands (used in the sections; keep these in every version)
+% ------------------------------------------------------------
+
+% a note to the author: shown while drafting, hidden for submission.
+\newcommand{\note}[1]{\ifshownotes{\color{Magenta}\small[\textbf{note:} #1]}\fi}
+
+% a placeholder for the author's own anecdote.
+\newcommand{\anecdote}[1]{\ifshownotes\par\noindent{\color{Magenta}\small\fbox{\parbox{0.96\linewidth}{\textbf{anecdote (to write):} #1}}}\par\fi}
+
+% text that names the author or links to their work; hidden when anonymous.
+\newcommand{\identifying}[2]{\ifanonymous #2\else #1\fi}
+
+% code & names from the system (kept in lowercase, as written).
+\newcommand{\code}[1]{\texttt{#1}}
+
+% the title of an interpretation (kept in lowercase, as the author writes them).
+\newcommand{\work}[1]{\emph{#1}}
+
+% the three parts of an interpretation, as written in its header.
+\newenvironment{interpretation}[1]
+  {\par\medskip\noindent\textbf{interpretation #1}\par\smallskip
+   \begin{description}[leftmargin=1.2em, labelindent=0em, font=\normalfont\itshape, itemsep=0.25em]}
+  {\end{description}\medskip}
